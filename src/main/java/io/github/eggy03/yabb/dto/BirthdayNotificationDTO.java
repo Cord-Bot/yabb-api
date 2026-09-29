@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.jspecify.annotations.NonNull;
 
 import java.time.Instant;
 
@@ -15,12 +16,12 @@ public class BirthdayNotificationDTO {
 
     @NotNull(message = "GuildID cannot be null")
     @Positive(message = "GuildID must be positive")
-    private Long guildId;
+    private @NonNull Long guildId;
 
     @NotNull(message = "UserID cannot be null")
     @Positive(message = "UserID must be positive")
-    private Long userId;
+    private @NonNull Long userId;
 
     @NotNull(message = "nextNotificationAt cannot be null")
-    private Instant nextNotificationAt;
+    private @NonNull Instant nextNotificationAt;
 }
