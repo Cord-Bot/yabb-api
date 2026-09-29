@@ -3,8 +3,7 @@ package io.github.eggy03.yabb.mapper;
 import io.github.eggy03.yabb.dto.BirthdayDTO;
 import io.github.eggy03.yabb.entity.Birthday;
 import jakarta.enterprise.context.ApplicationScoped;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
+import lombok.NonNull;
 
 import java.time.MonthDay;
 import java.time.ZoneId;
@@ -15,9 +14,8 @@ import java.util.Objects;
 public class BirthdayMapper implements CommonMappingInterface<Birthday, BirthdayDTO> {
 
     @Override
-    public @Nullable Birthday toEntity(@Nullable BirthdayDTO dto) {
-        if (dto == null) return null;
-
+    public @NonNull Birthday toEntity(@NonNull BirthdayDTO dto) {
+        
         // will validate the date and month received and throw exceptions for bad combinations
         MonthDay monthDay = MonthDay.of(dto.getBirthMonth(), dto.getBirthDay());
 
@@ -34,9 +32,8 @@ public class BirthdayMapper implements CommonMappingInterface<Birthday, Birthday
     }
 
     @Override
-    public @NonNull List<Birthday> toEntityList(@Nullable List<BirthdayDTO> dtoList) {
-        if (dtoList == null || dtoList.isEmpty())
-            return List.of();
+    public @NonNull List<Birthday> toEntityList(@NonNull List<BirthdayDTO> dtoList) {
+        if (dtoList.isEmpty()) return List.of();
 
         return dtoList
                 .stream()
@@ -46,9 +43,7 @@ public class BirthdayMapper implements CommonMappingInterface<Birthday, Birthday
     }
 
     @Override
-    public @Nullable BirthdayDTO toDTO(@Nullable Birthday entity) {
-
-        if (entity == null) return null;
+    public @NonNull BirthdayDTO toDTO(@NonNull Birthday entity) {
 
         // no need to validate month-day and time-zone id
         // we assume that an entity, before being stored is converted from dto to entity by this mapper
@@ -66,9 +61,8 @@ public class BirthdayMapper implements CommonMappingInterface<Birthday, Birthday
     }
 
     @Override
-    public @NonNull List<BirthdayDTO> toDTOList(@Nullable List<Birthday> entityList) {
-        if (entityList == null || entityList.isEmpty())
-            return List.of();
+    public @NonNull List<BirthdayDTO> toDTOList(@NonNull List<Birthday> entityList) {
+        if (entityList.isEmpty()) return List.of();
 
         return entityList
                 .stream()

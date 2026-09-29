@@ -3,8 +3,7 @@ package io.github.eggy03.yabb.mapper;
 import io.github.eggy03.yabb.dto.GuildDTO;
 import io.github.eggy03.yabb.entity.Guild;
 import jakarta.enterprise.context.ApplicationScoped;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
+import lombok.NonNull;
 
 import java.util.List;
 import java.util.Objects;
@@ -13,17 +12,13 @@ import java.util.Objects;
 public class GuildMapper implements CommonMappingInterface<Guild, GuildDTO> {
 
     @Override
-    public @Nullable Guild toEntity(@Nullable GuildDTO dto) {
-
-        if (dto == null) return null;
-
+    public @NonNull Guild toEntity(@NonNull GuildDTO dto) {
         return new Guild(dto.getGuildId(), dto.getChannelId());
     }
 
     @Override
-    public @NonNull List<Guild> toEntityList(@Nullable List<GuildDTO> dtoList) {
-        if (dtoList == null || dtoList.isEmpty())
-            return List.of();
+    public @NonNull List<Guild> toEntityList(@NonNull List<GuildDTO> dtoList) {
+        if (dtoList.isEmpty()) return List.of();
 
         return dtoList
                 .stream()
@@ -33,18 +28,13 @@ public class GuildMapper implements CommonMappingInterface<Guild, GuildDTO> {
     }
 
     @Override
-    public @Nullable GuildDTO toDTO(@Nullable Guild entity) {
-
-        if (entity == null)
-            return null;
-
+    public @NonNull GuildDTO toDTO(@NonNull Guild entity) {
         return new GuildDTO(entity.getGuildId(), entity.getChannelId());
     }
 
     @Override
-    public @NonNull List<GuildDTO> toDTOList(@Nullable List<Guild> entityList) {
-        if (entityList == null || entityList.isEmpty())
-            return List.of();
+    public @NonNull List<GuildDTO> toDTOList(@NonNull List<Guild> entityList) {
+        if (entityList.isEmpty()) return List.of();
 
         return entityList
                 .stream()
