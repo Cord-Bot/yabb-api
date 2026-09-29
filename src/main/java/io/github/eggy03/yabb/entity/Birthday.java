@@ -11,17 +11,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.time.Instant;
-
 @Entity
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "birthday_notification_table")
+@Table(name = "birthday_table")
 @IdClass(BirthdayId.class)
-public class BirthdayNotificationTable {
+public class Birthday {
 
     @Id
     @Column(name = "guild_id")
@@ -31,7 +29,12 @@ public class BirthdayNotificationTable {
     @Column(name = "user_id")
     private long userId;
 
-    @Column(name = "next_notification_at", nullable = false)
-    private Instant nextNotificationAt;
+    @Column(name = "birth_month", nullable = false)
+    private int birthMonth;
 
+    @Column(name = "birth_day", nullable = false)
+    private int birthDay;
+
+    @Column(name = "timezone", nullable = false)
+    private String timeZone;
 }

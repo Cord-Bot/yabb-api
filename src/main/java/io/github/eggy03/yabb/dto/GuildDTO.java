@@ -6,21 +6,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BirthdayNotificationTableDTO {
+public class GuildDTO {
 
     @NotNull(message = "GuildID cannot be null")
     @Positive(message = "GuildID must be positive")
     private Long guildId;
 
-    @NotNull(message = "UserID cannot be null")
-    @Positive(message = "UserID must be positive")
-    private Long userId;
+    @NotNull(message = "ChannelID cannot be null")
+    @Positive(message = "ChannelID must be positive")
+    private Long channelId;
 
-    @NotNull(message = "nextNotificationAt cannot be null")
-    private Instant nextNotificationAt;
 }

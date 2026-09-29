@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BirthdayTableDTO {
+public class BirthdayDTO {
 
     @NotNull(message = "GuildID cannot be null")
     @Positive(message = "GuildID must be positive")
