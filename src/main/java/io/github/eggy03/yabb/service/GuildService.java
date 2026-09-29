@@ -40,14 +40,14 @@ public class GuildService {
     }
 
     @Transactional
-    public void updateChannelId(long guildId, long newChannelId) {
+    public void updateGuild(@NonNull GuildDTO dto) {
 
         Guild existingEntity = guildRepository
-                .findByIdOptional(guildId)
-                .orElseThrow(()-> new GuildNotFoundException("Update Failed: Guild with ID: %s not found".formatted(guildId)));
+                .findByIdOptional(dto.getGuildId())
+                .orElseThrow(()-> new GuildNotFoundException("Update Failed: Guild with ID: %s not found".formatted(dto.getGuildId())));
 
         // dirty checking
-        existingEntity.setChannelId(newChannelId);
+        existingEntity.setChannelId(dto.getChannelId());
     }
 
     @Transactional
