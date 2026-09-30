@@ -22,16 +22,16 @@ public class BirthdayRequestDTO {
     private Long userId;
 
     @NotNull(message = "Birth Month cannot be null")
-    @Min(value = 1, message = "Birth month must be between 1 and 12")
-    @Max(value = 12, message = "Birth month must be between 1 and 12")
-    private Integer birthMonth;
+    @Min(value = 1, message = "Birth Month must be between 1 and 12")
+    @Max(value = 12, message = "Birth Month must be between 1 and 12")
+    private Integer month;
 
     @NotNull(message = "Birth Day cannot be null")
-    @Min(value = 1, message = "Birth day must be between 1 and 31")
-    @Max(value = 31, message = "Birth day must be between 1 and 31")
-    private Integer birthDay;
+    @Min(value = 1, message = "Birth Day must be between 1 and 31")
+    @Max(value = 31, message = "Birth Day must be between 1 and 31")
+    private Integer day;
 
-    @NotNull(message = "TimeZone cannot be null")
-    private String timeZone;
+    @NotNull(message = "IANA Zone ID cannot be null")
+    private String zoneId;
 
 }

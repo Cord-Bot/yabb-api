@@ -33,7 +33,7 @@ public class BirthdayService {
 
         Birthday entity = birthdayRequestMapper.toEntity(dto);
         // calculate the next notification time
-        entity.setNextNotificationAt(calculateNextNotificationAt(dto.getBirthMonth(), dto.getBirthDay(), dto.getTimeZone()));
+        entity.setNextNotificationAt(calculateNextNotificationAt(dto.getMonth(), dto.getDay(), dto.getZoneId()));
 
         birthdayRepository.persist(entity);
     }
@@ -65,11 +65,11 @@ public class BirthdayService {
                 .orElseThrow(()-> new BirthdayNotFoundException("No entry found for user: %s in guild: %s".formatted(updatedDTO.getGuildId(), updatedDTO.getUserId())));
 
         // dirty check
-        entity.setBirthMonth(updatedDTO.getBirthMonth());
-        entity.setBirthDay(updatedDTO.getBirthDay());
-        entity.setTimeZone(updatedDTO.getTimeZone());
+        entity.setMonth(updatedDTO.getMonth());
+        entity.setDay(updatedDTO.getDay());
+        entity.setZoneId(updatedDTO.getZoneId());
         // re-calculate the next notification time
-        entity.setNextNotificationAt(calculateNextNotificationAt(updatedDTO.getBirthMonth(), updatedDTO.getBirthDay(), updatedDTO.getTimeZone()));
+        entity.setNextNotificationAt(calculateNextNotificationAt(updatedDTO.getMonth(), updatedDTO.getDay(), updatedDTO.getZoneId()));
     }
 
     @Transactional
@@ -79,7 +79,7 @@ public class BirthdayService {
                 .findByIdOptional(new BirthdayId(guildId, userId))
                 .orElseThrow(()-> new BirthdayNotFoundException("No entry found for user: %s in guild: %s".formatted(guildId, userId)));
 
-        ZoneId zoneId = ZoneId.of(entity.getTimeZone());
+        ZoneId zoneId = ZoneId.of(entity.getZoneId());
 
         // dirty checking
         entity.setNextNotificationAt(

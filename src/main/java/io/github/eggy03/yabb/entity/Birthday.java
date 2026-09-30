@@ -32,13 +32,13 @@ public class Birthday {
     private long userId;
 
     @Column(name = "birth_month", nullable = false)
-    private int birthMonth;
+    private int month;
 
     @Column(name = "birth_day", nullable = false)
-    private int birthDay;
+    private int day;
 
-    @Column(name = "timezone", nullable = false)
-    private String timeZone;
+    @Column(name = "zone_id", nullable = false)
+    private String zoneId;
 
     // must always be calculated internally
     @Column(name = "next_notification_at", nullable = false)
