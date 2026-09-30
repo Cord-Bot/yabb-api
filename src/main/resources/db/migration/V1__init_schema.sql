@@ -16,3 +16,5 @@ create table yabb.birthday_table (
 
      constraint birthday_table_pk primary key (guild_id, user_id)
 );
+
+create index next_notification_at_idx on yabb.birthday_table (next_notification_at);
