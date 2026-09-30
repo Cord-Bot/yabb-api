@@ -8,13 +8,13 @@ import io.github.eggy03.yabb.exception.BirthdayNotFoundException;
 import io.github.eggy03.yabb.mapper.BirthdayRequestMapper;
 import io.github.eggy03.yabb.mapper.BirthdayResponseMapper;
 import io.github.eggy03.yabb.repository.BirthdayRepository;
+import io.github.eggy03.yabb.utility.BirthdayUtils;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-import java.time.Instant;
-import java.time.LocalDate;
+import java.time.MonthDay;
 import java.time.Year;
 import java.time.ZoneId;
 import java.util.List;
@@ -33,7 +33,9 @@ public class BirthdayService {
 
         Birthday entity = birthdayRequestMapper.toEntity(dto);
         // calculate the next notification time
-        entity.setNextNotificationAt(calculateNextNotificationAt(dto.getMonth(), dto.getDay(), dto.getZoneId()));
+        MonthDay monthDay = MonthDay.of(dto.getMonth(), dto.getDay());
+        ZoneId zoneId = ZoneId.of(dto.getZoneId());
+        entity.setNextNotificationAt(BirthdayUtils.nextWishAt(monthDay, zoneId));
 
         birthdayRepository.persist(entity);
     }
@@ -70,7 +72,9 @@ public class BirthdayService {
         entity.setZoneId(updatedDTO.getZoneId());
 
         // re-calculate the next notification time
-        entity.setNextNotificationAt(calculateNextNotificationAt(updatedDTO.getMonth(), updatedDTO.getDay(), updatedDTO.getZoneId()));
+        MonthDay monthDay = MonthDay.of(updatedDTO.getMonth(), updatedDTO.getDay());
+        ZoneId zoneId = ZoneId.of(updatedDTO.getZoneId());
+        entity.setNextNotificationAt(BirthdayUtils.nextWishAt(monthDay, zoneId));
     }
 
     @Transactional
@@ -81,11 +85,12 @@ public class BirthdayService {
                 .orElseThrow(()-> new BirthdayNotFoundException("No entry found for user: %s in guild: %s".formatted(guildId, userId)));
 
         ZoneId zoneId = ZoneId.of(entity.getZoneId());
+        MonthDay birthMonthDay = MonthDay.of(entity.getMonth(), entity.getDay());
         Year currentNotificationYear = Year.from(entity.getNextNotificationAt().atZone(zoneId));
 
         // dirty checking
         entity.setNextNotificationAt(
-                birthDateForYear(entity.getMonth(), entity.getDay(), currentNotificationYear.plusYears(1))
+                currentNotificationYear.plusYears(1).atMonthDay(birthMonthDay)
                         .atStartOfDay(zoneId)
                         .toInstant()
         );
@@ -96,39 +101,5 @@ public class BirthdayService {
 
         if (!birthdayRepository.deleteById(new BirthdayId(guildId, userId)))
             throw new BirthdayNotFoundException("No entry found for user: %s in guild: %s".formatted(guildId, userId)) ;
-    }
-
-    // for the given zoneId
-    // if the birthdate has already passed for the current year, then set the notification to occur next year
-    // else set it for this year's birthdate
-    @NonNull
-    Instant calculateNextNotificationAt(int birthMonth, int birthDay, @NonNull String zoneIdString) {
-
-        // don't use time to compare cause
-        // we want the notification to work as long as the birthdate day isn't over
-        // this way, a user who enters their birthdate for the first time, on the day
-        // of their birthday, will still be notified
-
-        ZoneId zoneId = ZoneId.of(zoneIdString);
-
-        LocalDate thisYearBirthDate = birthDateForYear(birthMonth, birthDay, Year.now(zoneId));
-        LocalDate nextYearBirthDate = birthDateForYear(birthMonth, birthDay, Year.now(zoneId).plusYears(1));
-        LocalDate today = LocalDate.now(zoneId);
-
-        return today.isAfter(thisYearBirthDate) ?
-                nextYearBirthDate.atStartOfDay(zoneId).toInstant() :
-                thisYearBirthDate.atStartOfDay(zoneId).toInstant();
-    }
-
-    LocalDate birthDateForYear(int birthMonth, int birthDay, @NonNull Year year) {
-
-        if (!year.isLeap() && birthMonth == 2 && birthDay == 29)
-            return LocalDate.of(year.getValue(), birthMonth, birthDay - 1);
-
-        return LocalDate.of(
-                year.getValue(),
-                birthMonth,
-                birthDay
-        );
     }
 }
