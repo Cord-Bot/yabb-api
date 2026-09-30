@@ -35,7 +35,6 @@ public class BirthdayService {
         // calculate the next notification time
         entity.setNextNotificationAt(calculateNextNotificationAt(dto.getBirthMonth(), dto.getBirthDay(), dto.getTimeZone()));
 
-        // todo catch ConstraintViolationException
         birthdayRepository.persist(entity);
     }
 
