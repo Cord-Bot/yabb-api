@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.Instant;
+
 @Entity
 @Getter
 @Setter
@@ -37,4 +39,8 @@ public class Birthday {
 
     @Column(name = "timezone", nullable = false)
     private String timeZone;
+
+    // must always be calculated internally
+    @Column(name = "next_notification_at", nullable = false)
+    private Instant nextNotificationAt;
 }

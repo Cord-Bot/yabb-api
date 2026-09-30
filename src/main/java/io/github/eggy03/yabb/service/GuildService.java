@@ -21,6 +21,7 @@ public class GuildService {
 
     @Transactional
     public void saveGuild(@NonNull GuildDTO dto) {
+        // todo catch ConstraintViolationException
         guildRepository.persist(guildMapper.toEntity(dto));
     }
 

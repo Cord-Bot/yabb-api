@@ -1,6 +1,6 @@
 package io.github.eggy03.yabb.controller;
 
-import io.github.eggy03.yabb.dto.BirthdayDTO;
+import io.github.eggy03.yabb.dto.BirthdayRequestDTO;
 import io.github.eggy03.yabb.service.BirthdayService;
 import io.smallrye.common.annotation.Blocking;
 import io.smallrye.common.annotation.RunOnVirtualThread;
@@ -32,7 +32,7 @@ public class BirthdayController {
     @POST
     @Blocking
     @RunOnVirtualThread
-    public Response saveBirthday(@Valid BirthdayDTO dto) {
+    public Response saveBirthday(@Valid BirthdayRequestDTO dto) {
         birthdayService.saveBirthday(dto);
         return Response.status(Response.Status.CREATED).build();
     }
@@ -57,11 +57,30 @@ public class BirthdayController {
                 .build();
     }
 
+    @GET
+    @Path("/pending")
+    @Blocking
+    @RunOnVirtualThread
+    public Response getPendingBirthdays() {
+        return Response
+                .ok(birthdayService.getPendingBirthdays())
+                .build();
+    }
+
     @PUT
     @Blocking
     @RunOnVirtualThread
-    public Response updateBirthday(@Valid BirthdayDTO updatedDTO) {
+    public Response updateBirthday(@Valid BirthdayRequestDTO updatedDTO) {
         birthdayService.updateBirthday(updatedDTO);
+        return Response.noContent().build();
+    }
+
+    @PUT
+    @Path("/{guildId}/{userId}")
+    @Blocking
+    @RunOnVirtualThread
+    public Response updateBirthdayForNextYear(@PathParam("guildId") @Positive long guildId, @PathParam("userId") @Positive long userId) {
+        birthdayService.updateBirthdayForNextYear(guildId, userId);
         return Response.noContent().build();
     }
 

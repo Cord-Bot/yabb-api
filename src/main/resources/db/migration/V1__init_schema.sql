@@ -12,14 +12,7 @@ create table yabb.birthday_table (
      birth_month int not null check (birth_month between 1 and 12),
      birth_day int not null check (birth_day between 1 and 31),
      timezone text not null,
-
-     constraint birthday_table_pk primary key (guild_id, user_id)
-);
-
-create table yabb.birthday_notification_table (
-     guild_id bigint not null,
-     user_id bigint not null,
      next_notification_at timestamp with time zone not null,
 
-     constraint birthday_notification_table_pk primary key (guild_id, user_id)
+     constraint birthday_table_pk primary key (guild_id, user_id)
 );

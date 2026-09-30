@@ -9,10 +9,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.jspecify.annotations.NonNull;
 
+import java.time.Instant;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BirthdayDTO {
+public class BirthdayResponseDTO {
 
     @NotNull(message = "GuildID cannot be null")
     @Positive(message = "GuildID must be positive")
@@ -35,4 +37,6 @@ public class BirthdayDTO {
     @NotNull(message = "TimeZone cannot be null")
     private @NonNull String timeZone;
 
+    @NotNull(message = "nextNotificationAt cannot be null")
+    private @NonNull Instant nextNotificationAt;
 }
