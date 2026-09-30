@@ -68,6 +68,7 @@ public class BirthdayService {
         entity.setMonth(updatedDTO.getMonth());
         entity.setDay(updatedDTO.getDay());
         entity.setZoneId(updatedDTO.getZoneId());
+
         // re-calculate the next notification time
         entity.setNextNotificationAt(calculateNextNotificationAt(updatedDTO.getMonth(), updatedDTO.getDay(), updatedDTO.getZoneId()));
     }
@@ -80,10 +81,13 @@ public class BirthdayService {
                 .orElseThrow(()-> new BirthdayNotFoundException("No entry found for user: %s in guild: %s".formatted(guildId, userId)));
 
         ZoneId zoneId = ZoneId.of(entity.getZoneId());
+        Year currentNotificationYear = Year.from(entity.getNextNotificationAt().atZone(zoneId));
 
         // dirty checking
         entity.setNextNotificationAt(
-                entity.getNextNotificationAt().atZone(zoneId).plusYears(1).toInstant()
+                birthDateForYear(entity.getMonth(), entity.getDay(), currentNotificationYear.plusYears(1))
+                        .atStartOfDay(zoneId)
+                        .toInstant()
         );
     }
 
@@ -106,14 +110,25 @@ public class BirthdayService {
         // of their birthday, will still be notified
 
         ZoneId zoneId = ZoneId.of(zoneIdString);
-        int currentYear = Year.now(zoneId).getValue();
-        int nextYear = currentYear + 1;
 
-        LocalDate thisYearBirthDate = LocalDate.of(currentYear, birthMonth, birthDay);
-        LocalDate presentDate = LocalDate.now(zoneId);
+        LocalDate thisYearBirthDate = birthDateForYear(birthMonth, birthDay, Year.now(zoneId));
+        LocalDate nextYearBirthDate = birthDateForYear(birthMonth, birthDay, Year.now(zoneId).plusYears(1));
+        LocalDate today = LocalDate.now(zoneId);
 
-        return presentDate.isAfter(thisYearBirthDate) ?
-                LocalDate.of(nextYear, birthMonth, birthDay).atStartOfDay(zoneId).toInstant() :
-                LocalDate.of(currentYear, birthMonth, birthDay).atStartOfDay(zoneId).toInstant();
+        return today.isAfter(thisYearBirthDate) ?
+                nextYearBirthDate.atStartOfDay(zoneId).toInstant() :
+                thisYearBirthDate.atStartOfDay(zoneId).toInstant();
+    }
+
+    LocalDate birthDateForYear(int birthMonth, int birthDay, @NonNull Year year) {
+
+        if (!year.isLeap() && birthMonth == 2 && birthDay == 29)
+            return LocalDate.of(year.getValue(), birthMonth, birthDay - 1);
+
+        return LocalDate.of(
+                year.getValue(),
+                birthMonth,
+                birthDay
+        );
     }
 }
