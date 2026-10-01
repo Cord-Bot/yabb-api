@@ -13,66 +13,90 @@ import java.time.ZoneId;
 public class BirthdayUtils {
 
     /**
-     * Calculates the next instant for a birthday wish.
+     * Convenience method for {@link #nextBirthdayAt(MonthDay, ZoneId)}
+     */
+    @NonNull
+    public static Instant nextBirthdayAt(int birthMonth, int birthDay, @NonNull String zoneIdString) {
+
+        MonthDay birthMonthDay = MonthDay.of(birthMonth, birthDay);
+        ZoneId zoneId = ZoneId.of(zoneIdString);
+
+        return nextBirthdayAt(birthMonthDay, zoneId);
+    }
+
+    /**
+     * Calculates the next instant for a given birth month and day.
      *
-     * <p>The time of day is always set to the start of the birthday (00:00),
-     * and the resulting instant is calculated using the IANA {@code zoneId}
-     * of the birthday user.</p>
+     * <p>If the birth month and day has already passed in the current year (in the user's time-zone),
+     * the upcoming birthday is set for the next year.
+     * If the birthday is today or in a future date, the upcoming birthday is set for the current year.</p>
      *
-     * <p>Firstly, if the birthday is on February 29
+     * <p>If the birthday is on February 29
      * and the year in which the user will be wished is not a leap year, the
      * birthday is treated as February 28. For a leap year, it remains February 29.</p>
      *
-     * <p>If the birthday has already passed in the current year, the wish is
-     * scheduled for the same birthday in the following year. If the birthday
-     * is today or is still upcoming, the wish is scheduled for the current year.</p>
+     * <p>The time of day is always set to (00:00), depending on the user's time-zone.</p>
      *
      * <h3>Examples</h3>
      *
      * <table border="1">
      *   <tr>
      *     <th>Today</th>
-     *     <th>Birthday (Month-Day)</th>
-     *     <th>Result (Local Time)</th>
+     *     <th>Birthday</th>
+     *     <th>Zone ID</th>
+     *     <th>Upcoming Birthday (Local Date Time)</th>
+     *     <th>Upcoming Birthday (Instant)</th>
      *   </tr>
      *   <tr>
      *     <td>2026-09-30</td>
      *     <td>09-30</td>
-     *     <td>2026-09-30T00:00:00</td>
+     *     <td>{@code America/New_York}</td>
+     *     <td>2026-09-30T00:00:00-04:00</td>
+     *     <td>2026-09-30T04:00:00Z</td>
      *   </tr>
      *   <tr>
      *     <td>2026-09-30</td>
      *     <td>10-15</td>
-     *     <td>2026-10-15T00:00:00</td>
+     *     <td>{@code America/New_York}</td>
+     *     <td>2026-10-15T00:00:00-04:00</td>
+     *     <td>2026-10-15T04:00:00Z</td>
      *   </tr>
      *   <tr>
      *     <td>2026-09-30</td>
      *     <td>09-29</td>
-     *     <td>2027-09-29T00:00:00</td>
+     *     <td>{@code America/New_York}</td>
+     *     <td>2027-09-29T00:00:00-04:00</td>
+     *     <td>2027-09-29T04:00:00Z</td>
      *   </tr>
      *   <tr>
      *     <td>2026-09-30</td>
      *     <td>02-29</td>
-     *     <td>2027-02-28T00:00:00</td>
+     *     <td>{@code America/New_York}</td>
+     *     <td>2027-02-28T00:00:00-05:00</td>
+     *     <td>2027-02-28T05:00:00Z</td>
      *   </tr>
      *   <tr>
      *     <td>2027-09-30</td>
      *     <td>02-29</td>
-     *     <td>2028-02-29T00:00:00</td>
+     *     <td>{@code America/New_York}</td>
+     *     <td>2028-02-29T00:00:00-05:00</td>
+     *     <td>2028-02-29T05:00:00Z</td>
      *   </tr>
      * </table>
      *
-     * @param monthDay the birthday month and day
-     * @param zoneId   the IANA time zone in which the birthday should be evaluated
+     * @param birthMonthDay the birth month and day
+     * @param zoneId     the IANA time zone in which the birthday should be evaluated
      * @return the start of the next applicable birthday in the specified time zone,
-     *         represented as an {@link Instant}
-     * @throws NullPointerException if {@code monthDay} or {@code zoneId} is null
+     * represented as an {@link Instant}
+     * @throws NullPointerException if {@code zoneId} is null
      */
     @NonNull
-    public static Instant nextWishAt(@NonNull MonthDay monthDay, @NonNull ZoneId zoneId) {
+    public static Instant nextBirthdayAt(@NonNull MonthDay birthMonthDay, @NonNull ZoneId zoneId) {
 
-        LocalDate thisYearBirthDate = Year.now(zoneId).atMonthDay(monthDay);
-        LocalDate nextYearBirthDate = Year.now(zoneId).plusYears(1).atMonthDay(monthDay);
+        Year currentYear = Year.now(zoneId);
+
+        LocalDate thisYearBirthDate = currentYear.atMonthDay(birthMonthDay);
+        LocalDate nextYearBirthDate = currentYear.plusYears(1).atMonthDay(birthMonthDay);
         LocalDate today = LocalDate.now(zoneId);
 
         return today.isAfter(thisYearBirthDate) ?

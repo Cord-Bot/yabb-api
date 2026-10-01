@@ -33,9 +33,7 @@ public class BirthdayService {
 
         Birthday entity = birthdayRequestMapper.toEntity(dto);
         // calculate the next notification time
-        MonthDay monthDay = MonthDay.of(dto.getMonth(), dto.getDay());
-        ZoneId zoneId = ZoneId.of(dto.getZoneId());
-        entity.setNextNotificationAt(BirthdayUtils.nextWishAt(monthDay, zoneId));
+        entity.setNextNotificationAt(BirthdayUtils.nextBirthdayAt(dto.getMonth(), dto.getDay(), dto.getZoneId()));
 
         birthdayRepository.persist(entity);
     }
@@ -72,9 +70,7 @@ public class BirthdayService {
         entity.setZoneId(updatedDTO.getZoneId());
 
         // re-calculate the next notification time
-        MonthDay monthDay = MonthDay.of(updatedDTO.getMonth(), updatedDTO.getDay());
-        ZoneId zoneId = ZoneId.of(updatedDTO.getZoneId());
-        entity.setNextNotificationAt(BirthdayUtils.nextWishAt(monthDay, zoneId));
+        entity.setNextNotificationAt(BirthdayUtils.nextBirthdayAt(updatedDTO.getMonth(), updatedDTO.getDay(), updatedDTO.getZoneId()));
     }
 
     @Transactional
