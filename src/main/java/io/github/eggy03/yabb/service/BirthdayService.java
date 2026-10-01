@@ -14,9 +14,6 @@ import jakarta.transaction.Transactional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-import java.time.MonthDay;
-import java.time.Year;
-import java.time.ZoneId;
 import java.util.List;
 
 @ApplicationScoped
@@ -74,11 +71,11 @@ public class BirthdayService {
     }
 
     @Transactional
-    public void updateBirthdayForNextYear(long guildId, long userId) {
+    public void updateBirthdayForNextYear(@NonNull BirthdayRequestDTO dto) {
 
         Birthday entity = birthdayRepository
-                .findByIdOptional(new BirthdayId(guildId, userId))
-                .orElseThrow(()-> new BirthdayNotFoundException("No entry found for user: %s in guild: %s".formatted(guildId, userId)));
+                .findByIdOptional(new BirthdayId(dto.getGuildId(), dto.getUserId()))
+                .orElseThrow(()-> new BirthdayNotFoundException("No entry found for user: %s in guild: %s".formatted(dto.getGuildId(), dto.getUserId())));
 
         // dirty checking
         entity.setNextBirthdayAt(BirthdayUtils.nextYearBirthdayAt(entity.getMonth(), entity.getDay(), entity.getZoneId()));

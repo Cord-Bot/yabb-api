@@ -76,11 +76,11 @@ public class BirthdayController {
     }
 
     @PUT
-    @Path("/{guildId}/{userId}")
+    @Path("/update-for-next-year")
     @Blocking
     @RunOnVirtualThread
-    public Response updateBirthdayForNextYear(@PathParam("guildId") @Positive long guildId, @PathParam("userId") @Positive long userId) {
-        birthdayService.updateBirthdayForNextYear(guildId, userId);
+    public Response updateBirthdayForNextYear(@Valid BirthdayRequestDTO dto) {
+        birthdayService.updateBirthdayForNextYear(dto);
         return Response.noContent().build();
     }
 
