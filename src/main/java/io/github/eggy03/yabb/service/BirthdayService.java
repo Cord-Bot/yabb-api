@@ -80,16 +80,8 @@ public class BirthdayService {
                 .findByIdOptional(new BirthdayId(guildId, userId))
                 .orElseThrow(()-> new BirthdayNotFoundException("No entry found for user: %s in guild: %s".formatted(guildId, userId)));
 
-        ZoneId zoneId = ZoneId.of(entity.getZoneId());
-        MonthDay birthMonthDay = MonthDay.of(entity.getMonth(), entity.getDay());
-        Year currentBirthdayYear = Year.from(entity.getNextBirthdayAt().atZone(zoneId));
-
         // dirty checking
-        entity.setNextBirthdayAt(
-                currentBirthdayYear.plusYears(1).atMonthDay(birthMonthDay)
-                        .atStartOfDay(zoneId)
-                        .toInstant()
-        );
+        entity.setNextBirthdayAt(BirthdayUtils.nextYearBirthdayAt(entity.getMonth(), entity.getDay(), entity.getZoneId()));
     }
 
     @Transactional
