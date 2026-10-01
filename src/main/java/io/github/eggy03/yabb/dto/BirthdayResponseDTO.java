@@ -36,6 +36,7 @@ public class BirthdayResponseDTO {
     @NotNull(message = "IANA Zone ID cannot be null")
     private String zoneId;
 
-    @NotNull(message = "nextNotificationAt cannot be null")
-    private Instant nextNotificationAt;
+    @NotNull(message = "nextBirthdayAt cannot be null")
+    private Instant nextBirthdayAt;
+
 }

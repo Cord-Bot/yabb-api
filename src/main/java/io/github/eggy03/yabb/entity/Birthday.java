@@ -41,6 +41,6 @@ public class Birthday {
     private String zoneId;
 
     // must always be calculated internally
-    @Column(name = "next_notification_at", nullable = false)
-    private Instant nextNotificationAt;
+    @Column(name = "next_birthday_at", nullable = false)
+    private Instant nextBirthdayAt;
 }

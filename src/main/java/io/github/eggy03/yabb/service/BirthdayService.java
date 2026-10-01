@@ -32,8 +32,8 @@ public class BirthdayService {
     public void saveBirthday(@NonNull BirthdayRequestDTO dto) {
 
         Birthday entity = birthdayRequestMapper.toEntity(dto);
-        // calculate the next notification time
-        entity.setNextNotificationAt(BirthdayUtils.nextBirthdayAt(dto.getMonth(), dto.getDay(), dto.getZoneId()));
+        // calculate the next birthday time
+        entity.setNextBirthdayAt(BirthdayUtils.nextBirthdayAt(dto.getMonth(), dto.getDay(), dto.getZoneId()));
 
         birthdayRepository.persist(entity);
     }
@@ -69,8 +69,8 @@ public class BirthdayService {
         entity.setDay(updatedDTO.getDay());
         entity.setZoneId(updatedDTO.getZoneId());
 
-        // re-calculate the next notification time
-        entity.setNextNotificationAt(BirthdayUtils.nextBirthdayAt(updatedDTO.getMonth(), updatedDTO.getDay(), updatedDTO.getZoneId()));
+        // re-calculate the next birthday time
+        entity.setNextBirthdayAt(BirthdayUtils.nextBirthdayAt(updatedDTO.getMonth(), updatedDTO.getDay(), updatedDTO.getZoneId()));
     }
 
     @Transactional
@@ -82,11 +82,11 @@ public class BirthdayService {
 
         ZoneId zoneId = ZoneId.of(entity.getZoneId());
         MonthDay birthMonthDay = MonthDay.of(entity.getMonth(), entity.getDay());
-        Year currentNotificationYear = Year.from(entity.getNextNotificationAt().atZone(zoneId));
+        Year currentBirthdayYear = Year.from(entity.getNextBirthdayAt().atZone(zoneId));
 
         // dirty checking
-        entity.setNextNotificationAt(
-                currentNotificationYear.plusYears(1).atMonthDay(birthMonthDay)
+        entity.setNextBirthdayAt(
+                currentBirthdayYear.plusYears(1).atMonthDay(birthMonthDay)
                         .atStartOfDay(zoneId)
                         .toInstant()
         );
