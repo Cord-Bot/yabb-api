@@ -21,4 +21,8 @@ public class GuildDTO {
     @Positive(message = "ChannelID must be positive")
     @Schema(description = "Discord channel ID where birthday notifications are sent", examples = {"987654321098765432"})
     private Long channelId;
+
+    @Positive(message = "RoleID must be positive")
+    @Schema(description = "Discord role ID to ping when birthday notifications are sent", examples = {"1234567891051454842"})
+    private Long roleId;
 }

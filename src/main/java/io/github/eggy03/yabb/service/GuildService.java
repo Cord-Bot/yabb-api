@@ -48,6 +48,7 @@ public class GuildService {
 
         // dirty checking
         existingEntity.setChannelId(dto.getChannelId());
+        existingEntity.setRoleId(dto.getRoleId());
     }
 
     @Transactional

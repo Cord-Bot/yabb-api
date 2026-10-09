@@ -25,4 +25,7 @@ public class Guild {
 
     @Column(name = "channel_id", unique = true, nullable = false)
     private Long channelId;
+
+    @Column(name = "role_id", unique = true)
+    private Long roleId;
 }
