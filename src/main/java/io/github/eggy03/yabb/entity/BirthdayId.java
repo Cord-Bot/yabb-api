@@ -10,6 +10,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @EqualsAndHashCode
 public class BirthdayId implements Serializable {
-    public long guildId;
-    public long userId;
+    public Long guildId;
+    public Long userId;
 }

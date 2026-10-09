@@ -25,17 +25,17 @@ public class Birthday {
 
     @Id
     @Column(name = "guild_id")
-    private long guildId;
+    private Long guildId;
 
     @Id
     @Column(name = "user_id")
-    private long userId;
+    private Long userId;
 
     @Column(name = "birth_month", nullable = false)
-    private int month;
+    private Integer month;
 
     @Column(name = "birth_day", nullable = false)
-    private int day;
+    private Integer day;
 
     @Column(name = "zone_id", nullable = false)
     private String zoneId;
