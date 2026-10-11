@@ -1,0 +1,722 @@
+{
+  "openapi" : "3.1.0",
+  "tags" : [ {
+    "name" : "Birthday"
+  }, {
+    "name" : "Guild"
+  } ],
+  "components" : {
+    "schemas" : {
+      "BirthdayRequestDTO" : {
+        "type" : "object",
+        "required" : [ "guildId", "userId", "month", "day", "zoneId" ],
+        "properties" : {
+          "guildId" : {
+            "type" : "integer",
+            "format" : "int64",
+            "examples" : [ 123456789012345678 ],
+            "exclusiveMinimum" : 0
+          },
+          "userId" : {
+            "type" : "integer",
+            "format" : "int64",
+            "examples" : [ 987654321098765432 ],
+            "exclusiveMinimum" : 0
+          },
+          "month" : {
+            "type" : "integer",
+            "format" : "int32",
+            "examples" : [ 8 ],
+            "maximum" : 12,
+            "minimum" : 1
+          },
+          "day" : {
+            "type" : "integer",
+            "format" : "int32",
+            "examples" : [ 29 ],
+            "maximum" : 31,
+            "minimum" : 1
+          },
+          "zoneId" : {
+            "type" : "string",
+            "examples" : [ "Asia/Kolkata" ]
+          }
+        }
+      },
+      "BirthdayResponseDTO" : {
+        "type" : "object",
+        "properties" : {
+          "guildId" : {
+            "type" : "integer",
+            "format" : "int64",
+            "examples" : [ 123456789012345678 ]
+          },
+          "userId" : {
+            "type" : "integer",
+            "format" : "int64",
+            "examples" : [ 987654321098765432 ]
+          },
+          "month" : {
+            "type" : "integer",
+            "format" : "int32",
+            "examples" : [ 8 ]
+          },
+          "day" : {
+            "type" : "integer",
+            "format" : "int32",
+            "examples" : [ 29 ]
+          },
+          "zoneId" : {
+            "type" : "string",
+            "description" : "IANA time zone ID",
+            "examples" : [ "Asia/Kolkata" ]
+          },
+          "nextBirthdayAt" : {
+            "$ref" : "#/components/schemas/Instant",
+            "description" : "Next scheduled birthday notification time in UTC",
+            "type" : "string",
+            "examples" : [ "2027-08-28T18:30:00Z" ]
+          }
+        }
+      },
+      "ErrorResponse" : {
+        "type" : "object",
+        "properties" : {
+          "status" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "error" : {
+            "type" : "string"
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "timeStamp" : {
+            "$ref" : "#/components/schemas/LocalDateTime"
+          },
+          "path" : {
+            "type" : "string"
+          }
+        }
+      },
+      "GuildDTO" : {
+        "type" : "object",
+        "required" : [ "guildId", "channelId" ],
+        "properties" : {
+          "guildId" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "Discord guild/server ID",
+            "examples" : [ 123456789012345678 ],
+            "exclusiveMinimum" : 0
+          },
+          "channelId" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "Discord channel ID where birthday notifications are sent",
+            "examples" : [ 987654321098765432 ],
+            "exclusiveMinimum" : 0
+          },
+          "roleId" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "Discord role ID to ping when birthday notifications are sent",
+            "examples" : [ 1234567891051454842 ],
+            "exclusiveMinimum" : 0
+          }
+        }
+      },
+      "Instant" : {
+        "type" : "string",
+        "format" : "date-time",
+        "examples" : [ "2022-03-10T16:15:50Z" ]
+      },
+      "LocalDateTime" : {
+        "type" : "string",
+        "format" : "date-time",
+        "examples" : [ "2022-03-10T12:15:50" ]
+      }
+    }
+  },
+  "paths" : {
+    "/api/v1/birthday" : {
+      "patch" : {
+        "summary" : "Update a Birthday",
+        "tags" : [ "Birthday" ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/BirthdayRequestDTO"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "204" : {
+            "description" : "Success"
+          },
+          "400" : {
+            "description" : "Validation Errors",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "summary" : "Save a Birthday",
+        "tags" : [ "Birthday" ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/BirthdayRequestDTO"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Success"
+          },
+          "400" : {
+            "description" : "Validation Errors",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "Constraint Violation Errors",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/birthday/pending" : {
+      "get" : {
+        "summary" : "Get Pending Birthday List",
+        "tags" : [ "Birthday" ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/BirthdayResponseDTO"
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/birthday/update-for-next-year" : {
+      "patch" : {
+        "summary" : "Update Birthday for Next Year",
+        "tags" : [ "Birthday" ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/BirthdayRequestDTO"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "204" : {
+            "description" : "Success"
+          },
+          "400" : {
+            "description" : "Validation Errors",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Birthday not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/birthday/{guildId}" : {
+      "get" : {
+        "summary" : "Get Birthdays for a Guild",
+        "tags" : [ "Birthday" ],
+        "parameters" : [ {
+          "name" : "guildId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64",
+            "exclusiveMinimum" : 0
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/BirthdayResponseDTO"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Validation Errors",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/birthday/{guildId}/{userId}" : {
+      "get" : {
+        "summary" : "Get Birthday for a User in a Guild",
+        "tags" : [ "Birthday" ],
+        "parameters" : [ {
+          "name" : "guildId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64",
+            "exclusiveMinimum" : 0
+          }
+        }, {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64",
+            "exclusiveMinimum" : 0
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BirthdayResponseDTO"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Validation Errors",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Birthday not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete" : {
+        "summary" : "Delete a Birthday",
+        "tags" : [ "Birthday" ],
+        "parameters" : [ {
+          "name" : "guildId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64",
+            "exclusiveMinimum" : 0
+          }
+        }, {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64",
+            "exclusiveMinimum" : 0
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Success"
+          },
+          "400" : {
+            "description" : "Validation Errors",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Birthday not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guild" : {
+      "patch" : {
+        "summary" : "Update a Guild",
+        "tags" : [ "Guild" ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/GuildDTO"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "204" : {
+            "description" : "Success"
+          },
+          "400" : {
+            "description" : "Validation Errors",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Guild not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "summary" : "Save a Guild",
+        "tags" : [ "Guild" ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/GuildDTO"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Success"
+          },
+          "400" : {
+            "description" : "Validation Errors",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "Constraint Violation Errors",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get" : {
+        "summary" : "Get All Guilds",
+        "tags" : [ "Guild" ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/GuildDTO"
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guild/{guildId}" : {
+      "get" : {
+        "summary" : "Get a Guild",
+        "tags" : [ "Guild" ],
+        "parameters" : [ {
+          "name" : "guildId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64",
+            "exclusiveMinimum" : 0
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/GuildDTO"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Validation Errors",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Guild not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete" : {
+        "summary" : "Delete a Guild",
+        "tags" : [ "Guild" ],
+        "parameters" : [ {
+          "name" : "guildId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64",
+            "exclusiveMinimum" : 0
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Success"
+          },
+          "400" : {
+            "description" : "Validation Errors",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Guild not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "info" : {
+    "title" : "yabb-api API",
+    "version" : "0.0.1"
+  }
+}
