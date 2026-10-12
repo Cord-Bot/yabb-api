@@ -12,7 +12,6 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(name = "BirthdayRequestDTO", requiredProperties = {"guildId", "userId", "month", "day", "zoneId"})
 public class BirthdayRequestDTO {
 
     @NotNull(message = "GuildID cannot be null")

@@ -10,7 +10,6 @@ import java.time.Instant;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(name = "BirthdayResponseDTO", requiredProperties = {"guildId", "userId", "month", "day", "zoneId", "nextBirthdayAt"})
 public class BirthdayResponseDTO {
 
     @Schema(required = true, examples = {"123456789012345678"})

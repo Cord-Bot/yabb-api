@@ -10,7 +10,6 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(name = "GuildDTO", requiredProperties = {"guildId", "channelId"})
 public class GuildDTO {
 
     @NotNull(message = "GuildID cannot be null")
