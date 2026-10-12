@@ -18,8 +18,7 @@ create table yabb.birthday_table
     zone_id          text                     not null,
     next_birthday_at timestamp with time zone not null,
 
-    constraint birthday_table_pk primary key (guild_id, user_id),
-    constraint birthday_table_guild_id_fk foreign key (guild_id) references yabb.guild_table (guild_id) on delete cascade
+    constraint birthday_table_pk primary key (guild_id, user_id)
 );
 
 create index idx_next_birthday_at on yabb.birthday_table (next_birthday_at);
