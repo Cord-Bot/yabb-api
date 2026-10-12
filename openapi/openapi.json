@@ -251,57 +251,6 @@
         }
       }
     },
-    "/api/v1/birthday/update-for-next-year" : {
-      "patch" : {
-        "summary" : "Update Birthday for Next Year",
-        "tags" : [ "Birthday" ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/BirthdayRequestDTO"
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "204" : {
-            "description" : "Success"
-          },
-          "400" : {
-            "description" : "Validation Errors",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404" : {
-            "description" : "Birthday not found",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500" : {
-            "description" : "Internal Server Error",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/v1/birthday/{guildId}" : {
       "get" : {
         "summary" : "Get Birthdays for a Guild",
