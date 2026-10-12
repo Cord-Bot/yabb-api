@@ -76,4 +76,9 @@ public class BirthdayService {
         if (!birthdayRepository.deleteById(new BirthdayId(guildId, userId)))
             throw new BirthdayNotFoundException("No entry found for user: %s in guild: %s".formatted(guildId, userId)) ;
     }
+
+    @Transactional
+    public long deleteBirthdayByGuild(long guildId) {
+        return birthdayRepository.deleteByGuildId(guildId);
+    }
 }

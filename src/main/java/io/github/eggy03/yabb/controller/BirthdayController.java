@@ -104,10 +104,24 @@ public class BirthdayController {
     }
 
     @DELETE
+    @Path("/{guildId}")
+    @Blocking
+    @RunOnVirtualThread
+    @Operation(summary = "Delete all Birthdays belonging to a Guild")
+    @APIResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.TEXT_PLAIN))
+    @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
+    public Response deleteBirthdayByGuild(@PathParam("guildId") @Positive long guildId) {
+        return Response
+                .ok(String.valueOf(birthdayService.deleteBirthdayByGuild(guildId)))
+                .build();
+    }
+
+    @DELETE
     @Path("/{guildId}/{userId}")
     @Blocking
     @RunOnVirtualThread
-    @Operation(summary = "Delete a Birthday")
+    @Operation(summary = "Delete a User's Birthday")
     @APIResponse(responseCode = "204", description = "Success")
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "404", description = "Birthday not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))

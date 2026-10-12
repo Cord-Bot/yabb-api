@@ -300,6 +300,48 @@
             }
           }
         }
+      },
+      "delete" : {
+        "summary" : "Delete all Birthdays belonging to a Guild",
+        "tags" : [ "Birthday" ],
+        "parameters" : [ {
+          "name" : "guildId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64",
+            "exclusiveMinimum" : 0
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "text/plain" : { }
+            }
+          },
+          "400" : {
+            "description" : "Validation Errors",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/birthday/{guildId}/{userId}" : {
@@ -369,7 +411,7 @@
         }
       },
       "delete" : {
-        "summary" : "Delete a Birthday",
+        "summary" : "Delete a User's Birthday",
         "tags" : [ "Birthday" ],
         "parameters" : [ {
           "name" : "guildId",
