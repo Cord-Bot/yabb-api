@@ -1,10 +1,15 @@
 {
   "openapi" : "3.1.0",
+  "tags" : [ {
+    "name" : "Birthday"
+  }, {
+    "name" : "Guild"
+  } ],
   "components" : {
     "schemas" : {
       "BirthdayRequestDTO" : {
-        "required" : [ "guildId", "userId", "month", "day", "zoneId", "guildId", "userId", "month", "day", "zoneId" ],
         "type" : "object",
+        "required" : [ "guildId", "userId", "month", "day", "zoneId" ],
         "properties" : {
           "guildId" : {
             "type" : "integer",
@@ -39,8 +44,8 @@
         }
       },
       "BirthdayResponseDTO" : {
-        "required" : [ "guildId", "userId", "month", "day", "zoneId", "nextBirthdayAt", "guildId", "userId", "month", "day", "zoneId", "nextBirthdayAt" ],
         "type" : "object",
+        "required" : [ "guildId", "userId", "month", "day", "zoneId", "nextBirthdayAt" ],
         "properties" : {
           "guildId" : {
             "type" : "integer",
@@ -97,8 +102,8 @@
         }
       },
       "GuildDTO" : {
-        "required" : [ "guildId", "channelId", "guildId", "channelId" ],
         "type" : "object",
+        "required" : [ "guildId", "channelId" ],
         "properties" : {
           "guildId" : {
             "type" : "integer",
@@ -135,15 +140,11 @@
       }
     }
   },
-  "tags" : [ {
-    "name" : "Birthday"
-  }, {
-    "name" : "Guild"
-  } ],
   "paths" : {
     "/api/v1/birthday" : {
       "patch" : {
         "summary" : "Update a Birthday",
+        "operationId" : "updateBirthday",
         "tags" : [ "Birthday" ],
         "requestBody" : {
           "content" : {
@@ -193,6 +194,7 @@
       },
       "post" : {
         "summary" : "Save a Birthday",
+        "operationId" : "saveBirthday",
         "tags" : [ "Birthday" ],
         "requestBody" : {
           "content" : {
@@ -244,6 +246,7 @@
     "/api/v1/birthday/pending" : {
       "get" : {
         "summary" : "Get Pending Birthday List",
+        "operationId" : "getPendingBirthdays",
         "tags" : [ "Birthday" ],
         "responses" : {
           "200" : {
@@ -275,6 +278,7 @@
     "/api/v1/birthday/update-for-next-year" : {
       "patch" : {
         "summary" : "Update Birthday for Next Year",
+        "operationId" : "updateBirthdayForNextYear",
         "tags" : [ "Birthday" ],
         "requestBody" : {
           "content" : {
@@ -326,6 +330,7 @@
     "/api/v1/birthday/{guildId}" : {
       "get" : {
         "summary" : "Get Birthdays for a Guild",
+        "operationId" : "getBirthdays",
         "tags" : [ "Birthday" ],
         "parameters" : [ {
           "required" : true,
@@ -375,6 +380,7 @@
       },
       "delete" : {
         "summary" : "Delete all Birthdays belonging to a Guild",
+        "operationId" : "deleteBirthdays",
         "tags" : [ "Birthday" ],
         "parameters" : [ {
           "required" : true,
@@ -419,6 +425,7 @@
     "/api/v1/birthday/{guildId}/{userId}" : {
       "get" : {
         "summary" : "Get Birthday for a User in a Guild",
+        "operationId" : "getBirthday",
         "tags" : [ "Birthday" ],
         "parameters" : [ {
           "required" : true,
@@ -484,6 +491,7 @@
       },
       "delete" : {
         "summary" : "Delete a User's Birthday",
+        "operationId" : "deleteBirthday",
         "tags" : [ "Birthday" ],
         "parameters" : [ {
           "required" : true,
@@ -544,6 +552,7 @@
     "/api/v1/guild" : {
       "patch" : {
         "summary" : "Update a Guild",
+        "operationId" : "updateGuild",
         "tags" : [ "Guild" ],
         "requestBody" : {
           "content" : {
@@ -593,6 +602,7 @@
       },
       "post" : {
         "summary" : "Save a Guild",
+        "operationId" : "saveGuild",
         "tags" : [ "Guild" ],
         "requestBody" : {
           "content" : {
@@ -642,6 +652,7 @@
       },
       "get" : {
         "summary" : "Get All Guilds",
+        "operationId" : "getAllGuilds",
         "tags" : [ "Guild" ],
         "responses" : {
           "200" : {
@@ -673,6 +684,7 @@
     "/api/v1/guild/{guildId}" : {
       "get" : {
         "summary" : "Get a Guild",
+        "operationId" : "getGuild",
         "tags" : [ "Guild" ],
         "parameters" : [ {
           "required" : true,
@@ -729,6 +741,7 @@
       },
       "delete" : {
         "summary" : "Delete a Guild",
+        "operationId" : "deleteGuild",
         "tags" : [ "Guild" ],
         "parameters" : [ {
           "required" : true,

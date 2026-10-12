@@ -42,7 +42,7 @@ public class BirthdayController {
     @POST
     @Blocking
     @RunOnVirtualThread
-    @Operation(summary = "Save a Birthday")
+    @Operation(operationId = "saveBirthday", summary = "Save a Birthday")
     @RequestBody(content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayRequestDTO.class)))
     @APIResponse(responseCode = "201", description = "Success")
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
@@ -57,7 +57,7 @@ public class BirthdayController {
     @Path("/{guildId}/{userId}")
     @Blocking
     @RunOnVirtualThread
-    @Operation(summary = "Get Birthday for a User in a Guild")
+    @Operation(operationId = "getBirthday", summary = "Get Birthday for a User in a Guild")
     @APIResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayResponseDTO.class)))
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "404", description = "Birthday not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
@@ -72,7 +72,7 @@ public class BirthdayController {
     @Path("/{guildId}")
     @Blocking
     @RunOnVirtualThread
-    @Operation(summary = "Get Birthdays for a Guild")
+    @Operation(operationId = "getBirthdays", summary = "Get Birthdays for a Guild")
     @APIResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayResponseDTO[].class)))
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
@@ -86,7 +86,7 @@ public class BirthdayController {
     @Path("/pending")
     @Blocking
     @RunOnVirtualThread
-    @Operation(summary = "Get Pending Birthday List")
+    @Operation(operationId = "getPendingBirthdays", summary = "Get Pending Birthday List")
     @APIResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayResponseDTO[].class)))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     public Response getPendingBirthdays() {
@@ -98,7 +98,7 @@ public class BirthdayController {
     @PATCH
     @Blocking
     @RunOnVirtualThread
-    @Operation(summary = "Update a Birthday")
+    @Operation(operationId = "updateBirthday", summary = "Update a Birthday")
     @RequestBody(content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayRequestDTO.class)))
     @APIResponse(responseCode = "204", description = "Success")
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
@@ -113,7 +113,7 @@ public class BirthdayController {
     @Path("/update-for-next-year")
     @Blocking
     @RunOnVirtualThread
-    @Operation(summary = "Update Birthday for Next Year")
+    @Operation(operationId = "updateBirthdayForNextYear", summary = "Update Birthday for Next Year")
     @RequestBody(content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayRequestDTO.class)))
     @APIResponse(responseCode = "204", description = "Success")
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
@@ -128,7 +128,7 @@ public class BirthdayController {
     @Path("/{guildId}")
     @Blocking
     @RunOnVirtualThread
-    @Operation(summary = "Delete all Birthdays belonging to a Guild")
+    @Operation(operationId = "deleteBirthdays", summary = "Delete all Birthdays belonging to a Guild")
     @APIResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.TEXT_PLAIN))
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
@@ -142,7 +142,7 @@ public class BirthdayController {
     @Path("/{guildId}/{userId}")
     @Blocking
     @RunOnVirtualThread
-    @Operation(summary = "Delete a User's Birthday")
+    @Operation(operationId = "deleteBirthday", summary = "Delete a User's Birthday")
     @APIResponse(responseCode = "204", description = "Success")
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "404", description = "Birthday not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))

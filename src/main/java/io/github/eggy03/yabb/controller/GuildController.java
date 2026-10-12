@@ -41,7 +41,7 @@ public class GuildController {
     @POST
     @Blocking
     @RunOnVirtualThread
-    @Operation(summary = "Save a Guild")
+    @Operation(operationId = "saveGuild", summary = "Save a Guild")
     @RequestBody(content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = GuildDTO.class)))
     @APIResponse(responseCode = "201", description = "Success")
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
@@ -56,7 +56,7 @@ public class GuildController {
     @Path("/{guildId}")
     @Blocking
     @RunOnVirtualThread
-    @Operation(summary = "Get a Guild")
+    @Operation(operationId = "getGuild", summary = "Get a Guild")
     @APIResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = GuildDTO.class)))
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "404", description = "Guild not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
@@ -70,7 +70,7 @@ public class GuildController {
     @GET
     @Blocking
     @RunOnVirtualThread
-    @Operation(summary = "Get All Guilds")
+    @Operation(operationId = "getAllGuilds", summary = "Get All Guilds")
     @APIResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = GuildDTO[].class)))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     public Response getAllGuilds() {
@@ -82,7 +82,7 @@ public class GuildController {
     @PATCH
     @Blocking
     @RunOnVirtualThread
-    @Operation(summary = "Update a Guild")
+    @Operation(operationId = "updateGuild", summary = "Update a Guild")
     @RequestBody(content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = GuildDTO.class)))
     @APIResponse(responseCode = "204", description = "Success")
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
@@ -97,7 +97,7 @@ public class GuildController {
     @Path("/{guildId}")
     @Blocking
     @RunOnVirtualThread
-    @Operation(summary = "Delete a Guild")
+    @Operation(operationId = "deleteGuild", summary = "Delete a Guild")
     @APIResponse(responseCode = "204", description = "Success")
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "404", description = "Guild not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
