@@ -106,4 +106,49 @@ public class BirthdayUtils {
                 nextYearBirthDate.atStartOfDay(zoneId).toInstant() :
                 thisYearBirthDate.atStartOfDay(zoneId).toInstant();
     }
+
+    /**
+     * Convenience method for {@link #nextYearBirthdayAt(MonthDay, ZoneId)}
+     */
+    @NonNull
+    public static Instant nextYearBirthdayAt(int birthMonth, int birthDay, @NonNull String zoneIdString) {
+
+        MonthDay birthMonthDay = MonthDay.of(birthMonth, birthDay);
+        ZoneId zoneId = ZoneId.of(zoneIdString);
+
+        return nextYearBirthdayAt(birthMonthDay, zoneId);
+    }
+
+    /**
+     * Calculates the birthday for the following year.
+     *
+     * <p>Unlike {@link #nextBirthdayAt(MonthDay, ZoneId)}, this method always
+     * returns birthday for the following year. It does not check whether
+     * the birthday has already occurred, is today, or is still upcoming in the
+     * current year.</p>
+     *
+     * <p>The birthday is evaluated at {@code 00:00} in the provided IANA
+     * time zone and converted to an {@link Instant}.</p>
+     *
+     * <p>Leap-day birthdays ({@code February 29}) are treated as
+     * {@code February 28} when the following year is not a leap year.</p>
+     *
+     * <p>NOTE: This method always uses the present year for the given {@code ZoneId}.
+     * All calculations are based on the present year.</p>
+     *
+     * @param birthMonthDay the birthday month and day
+     * @param zoneId the IANA time zone in which the birthday is evaluated
+     * @return the birthday notification time in the following year as an
+     *         {@link Instant}
+     * @throws NullPointerException if {@code birthMonthDay} or {@code zoneId}
+     *         is null
+     */
+    @NonNull
+    public static Instant nextYearBirthdayAt(@NonNull MonthDay birthMonthDay, @NonNull ZoneId zoneId) {
+
+        Year currentYear = Year.now(zoneId);
+        LocalDate nextYearBirthDate = currentYear.plusYears(1).atMonthDay(birthMonthDay);
+
+        return nextYearBirthDate.atStartOfDay(zoneId).toInstant();
+    }
 }
