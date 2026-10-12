@@ -71,17 +71,6 @@ public class BirthdayService {
     }
 
     @Transactional
-    public void updateBirthdayForNextYear(@NonNull BirthdayRequestDTO dto) {
-
-        Birthday entity = birthdayRepository
-                .findByIdOptional(new BirthdayId(dto.getGuildId(), dto.getUserId()))
-                .orElseThrow(()-> new BirthdayNotFoundException("No entry found for user: %s in guild: %s".formatted(dto.getGuildId(), dto.getUserId())));
-
-        // dirty checking
-        entity.setNextBirthdayAt(BirthdayUtils.nextYearBirthdayAt(entity.getMonth(), entity.getDay(), entity.getZoneId()));
-    }
-
-    @Transactional
     public void deleteBirthday(long guildId, long userId) {
 
         if (!birthdayRepository.deleteById(new BirthdayId(guildId, userId)))

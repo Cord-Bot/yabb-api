@@ -103,20 +103,6 @@ public class BirthdayController {
         return Response.noContent().build();
     }
 
-    @PATCH
-    @Path("/update-for-next-year")
-    @Blocking
-    @RunOnVirtualThread
-    @Operation(summary = "Update Birthday for Next Year")
-    @APIResponse(responseCode = "204", description = "Success")
-    @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
-    @APIResponse(responseCode = "404", description = "Birthday not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
-    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
-    public Response updateBirthdayForNextYear(@Valid BirthdayRequestDTO dto) {
-        birthdayService.updateBirthdayForNextYear(dto);
-        return Response.noContent().build();
-    }
-
     @DELETE
     @Path("/{guildId}/{userId}")
     @Blocking
