@@ -1,15 +1,10 @@
 {
   "openapi" : "3.1.0",
-  "tags" : [ {
-    "name" : "Birthday"
-  }, {
-    "name" : "Guild"
-  } ],
   "components" : {
     "schemas" : {
       "BirthdayRequestDTO" : {
+        "required" : [ "guildId", "userId", "month", "day", "zoneId", "guildId", "userId", "month", "day", "zoneId" ],
         "type" : "object",
-        "required" : [ "guildId", "userId", "month", "day", "zoneId" ],
         "properties" : {
           "guildId" : {
             "type" : "integer",
@@ -44,6 +39,7 @@
         }
       },
       "BirthdayResponseDTO" : {
+        "required" : [ "guildId", "userId", "month", "day", "zoneId", "nextBirthdayAt", "guildId", "userId", "month", "day", "zoneId", "nextBirthdayAt" ],
         "type" : "object",
         "properties" : {
           "guildId" : {
@@ -101,8 +97,8 @@
         }
       },
       "GuildDTO" : {
+        "required" : [ "guildId", "channelId", "guildId", "channelId" ],
         "type" : "object",
-        "required" : [ "guildId", "channelId" ],
         "properties" : {
           "guildId" : {
             "type" : "integer",
@@ -139,6 +135,11 @@
       }
     }
   },
+  "tags" : [ {
+    "name" : "Birthday"
+  }, {
+    "name" : "Guild"
+  } ],
   "paths" : {
     "/api/v1/birthday" : {
       "patch" : {
@@ -160,6 +161,26 @@
           },
           "400" : {
             "description" : "Validation Errors",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Birthday not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -251,14 +272,65 @@
         }
       }
     },
+    "/api/v1/birthday/update-for-next-year" : {
+      "patch" : {
+        "summary" : "Update Birthday for Next Year",
+        "tags" : [ "Birthday" ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/BirthdayRequestDTO"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "204" : {
+            "description" : "Success"
+          },
+          "400" : {
+            "description" : "Validation Errors",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Birthday not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/birthday/{guildId}" : {
       "get" : {
         "summary" : "Get Birthdays for a Guild",
         "tags" : [ "Birthday" ],
         "parameters" : [ {
+          "required" : true,
           "name" : "guildId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "type" : "integer",
             "format" : "int64",
@@ -305,9 +377,9 @@
         "summary" : "Delete all Birthdays belonging to a Guild",
         "tags" : [ "Birthday" ],
         "parameters" : [ {
+          "required" : true,
           "name" : "guildId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "type" : "integer",
             "format" : "int64",
@@ -349,18 +421,18 @@
         "summary" : "Get Birthday for a User in a Guild",
         "tags" : [ "Birthday" ],
         "parameters" : [ {
+          "required" : true,
           "name" : "guildId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "type" : "integer",
             "format" : "int64",
             "exclusiveMinimum" : 0
           }
         }, {
+          "required" : true,
           "name" : "userId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "type" : "integer",
             "format" : "int64",
@@ -414,9 +486,9 @@
         "summary" : "Delete a User's Birthday",
         "tags" : [ "Birthday" ],
         "parameters" : [ {
+          "required" : true,
           "name" : "guildId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "type" : "integer",
             "format" : "int64",
@@ -603,9 +675,9 @@
         "summary" : "Get a Guild",
         "tags" : [ "Guild" ],
         "parameters" : [ {
+          "required" : true,
           "name" : "guildId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "type" : "integer",
             "format" : "int64",
@@ -659,9 +731,9 @@
         "summary" : "Delete a Guild",
         "tags" : [ "Guild" ],
         "parameters" : [ {
+          "required" : true,
           "name" : "guildId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "type" : "integer",
             "format" : "int64",
