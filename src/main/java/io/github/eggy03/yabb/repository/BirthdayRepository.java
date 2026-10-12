@@ -17,7 +17,7 @@ public class BirthdayRepository implements PanacheRepositoryBase<Birthday, Birth
     }
 
     public List<Birthday> findPendingBirthdays() {
-        return find("nextNotificationAt <= :now", Map.of("now", Instant.now())).list();
+        return find("nextBirthdayAt <= :now", Map.of("now", Instant.now())).list();
     }
 
     public long deleteByGuildId(long guildId) {
