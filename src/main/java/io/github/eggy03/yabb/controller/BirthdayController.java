@@ -24,6 +24,8 @@ import lombok.RequiredArgsConstructor;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -41,6 +43,7 @@ public class BirthdayController {
     @Blocking
     @RunOnVirtualThread
     @Operation(summary = "Save a Birthday")
+    @RequestBody(content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayRequestDTO.class)))
     @APIResponse(responseCode = "201", description = "Success")
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "409", description = "Constraint Violation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
@@ -59,7 +62,7 @@ public class BirthdayController {
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "404", description = "Birthday not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
-    public Response getBirthday(@PathParam("guildId") @Positive long guildId, @PathParam("userId") @Positive long userId) {
+    public Response getBirthday(@Parameter(required = true) @PathParam("guildId") @Positive long guildId, @Parameter(required = true) @PathParam("userId") @Positive long userId) {
         return Response
                 .ok(birthdayService.getBirthday(guildId, userId))
                 .build();
@@ -73,7 +76,7 @@ public class BirthdayController {
     @APIResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayResponseDTO[].class)))
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
-    public Response getBirthdays(@PathParam("guildId") @Positive long guildId) {
+    public Response getBirthdays(@Parameter(required = true) @PathParam("guildId") @Positive long guildId) {
         return Response
                 .ok(birthdayService.getBirthdays(guildId))
                 .build();
@@ -96,6 +99,7 @@ public class BirthdayController {
     @Blocking
     @RunOnVirtualThread
     @Operation(summary = "Update a Birthday")
+    @RequestBody(content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayRequestDTO.class)))
     @APIResponse(responseCode = "204", description = "Success")
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "404", description = "Birthday not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
@@ -110,6 +114,7 @@ public class BirthdayController {
     @Blocking
     @RunOnVirtualThread
     @Operation(summary = "Update Birthday for Next Year")
+    @RequestBody(content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayRequestDTO.class)))
     @APIResponse(responseCode = "204", description = "Success")
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "404", description = "Birthday not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
@@ -127,7 +132,7 @@ public class BirthdayController {
     @APIResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.TEXT_PLAIN))
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
-    public Response deleteBirthdayByGuild(@PathParam("guildId") @Positive long guildId) {
+    public Response deleteBirthdayByGuild(@Parameter(required = true) @PathParam("guildId") @Positive long guildId) {
         return Response
                 .ok(String.valueOf(birthdayService.deleteBirthdayByGuild(guildId)))
                 .build();
@@ -142,7 +147,7 @@ public class BirthdayController {
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "404", description = "Birthday not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
-    public Response deleteBirthday(@PathParam("guildId") @Positive long guildId, @PathParam("userId") @Positive long userId) {
+    public Response deleteBirthday(@Parameter(required = true) @PathParam("guildId") @Positive long guildId, @PathParam("userId") @Positive long userId) {
         birthdayService.deleteBirthday(guildId, userId);
         return Response.noContent().build();
     }

@@ -23,6 +23,8 @@ import lombok.RequiredArgsConstructor;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -40,6 +42,7 @@ public class GuildController {
     @Blocking
     @RunOnVirtualThread
     @Operation(summary = "Save a Guild")
+    @RequestBody(content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = GuildDTO.class)))
     @APIResponse(responseCode = "201", description = "Success")
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "409", description = "Constraint Violation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
@@ -58,7 +61,7 @@ public class GuildController {
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "404", description = "Guild not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
-    public Response getGuild(@PathParam("guildId") @Positive long guildId) {
+    public Response getGuild(@Parameter(required = true) @PathParam("guildId") @Positive long guildId) {
         return Response
                 .ok(guildService.getGuild(guildId))
                 .build();
@@ -80,6 +83,7 @@ public class GuildController {
     @Blocking
     @RunOnVirtualThread
     @Operation(summary = "Update a Guild")
+    @RequestBody(content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = GuildDTO.class)))
     @APIResponse(responseCode = "204", description = "Success")
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "404", description = "Guild not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
@@ -98,7 +102,7 @@ public class GuildController {
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "404", description = "Guild not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
-    public Response deleteGuild(@PathParam("guildId") @Positive long guildId) {
+    public Response deleteGuild(@Parameter(required = true) @PathParam("guildId") @Positive long guildId) {
         guildService.deleteGuild(guildId);
         return Response.noContent().build();
     }

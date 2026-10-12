@@ -10,16 +10,17 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(name = "GuildDTO", requiredProperties = {"guildId", "channelId"})
 public class GuildDTO {
 
     @NotNull(message = "GuildID cannot be null")
     @Positive(message = "GuildID must be positive")
-    @Schema(description = "Discord guild/server ID", examples = {"123456789012345678"})
+    @Schema(required = true, description = "Discord guild/server ID", examples = {"123456789012345678"})
     private Long guildId;
 
     @NotNull(message = "ChannelID cannot be null")
     @Positive(message = "ChannelID must be positive")
-    @Schema(description = "Discord channel ID where birthday notifications are sent", examples = {"987654321098765432"})
+    @Schema(required = true, description = "Discord channel ID where birthday notifications are sent", examples = {"987654321098765432"})
     private Long channelId;
 
     @Positive(message = "RoleID must be positive")
