@@ -83,15 +83,41 @@ public class BirthdayController {
     }
 
     @GET
-    @Path("/pending")
+    @Path("/upcoming")
     @Blocking
     @RunOnVirtualThread
-    @Operation(operationId = "getPendingBirthdays", summary = "Get Pending Birthday List")
+    @Operation(operationId = "getUpcomingBirthdays", summary = "Get a list of birthdays due in the future")
     @APIResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayResponseDTO[].class)))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
-    public Response getPendingBirthdays() {
+    public Response getUpcomingBirthdays() {
         return Response
-                .ok(birthdayService.getPendingBirthdays())
+                .ok(birthdayService.getUpcomingBirthdays())
+                .build();
+    }
+
+    @GET
+    @Path("/active")
+    @Blocking
+    @RunOnVirtualThread
+    @Operation(operationId = "getActiveBirthdays", summary = "Get a list of birthdays overdue by at most 24 hours")
+    @APIResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayResponseDTO[].class)))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
+    public Response getActiveBirthdays() {
+        return Response
+                .ok(birthdayService.getActiveBirthdays())
+                .build();
+    }
+
+    @GET
+    @Path("/expired")
+    @Blocking
+    @RunOnVirtualThread
+    @Operation(operationId = "getExpiredBirthdays", summary = "Get a list of birthdays overdue by more than 24 hours")
+    @APIResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayResponseDTO[].class)))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
+    public Response getExpiredBirthdays() {
+        return Response
+                .ok(birthdayService.getExpiredBirthdays())
                 .build();
     }
 

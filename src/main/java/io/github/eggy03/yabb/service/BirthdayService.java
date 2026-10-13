@@ -50,8 +50,18 @@ public class BirthdayService {
     }
 
     @Transactional
-    public @NonNull List<BirthdayResponseDTO> getPendingBirthdays() {
-        return birthdayResponseMapper.toDTOList(birthdayRepository.findPendingBirthdays());
+    public @NonNull List<BirthdayResponseDTO> getUpcomingBirthdays() {
+        return birthdayResponseMapper.toDTOList(birthdayRepository.findUpcomingBirthdays());
+    }
+
+    @Transactional
+    public @NonNull List<BirthdayResponseDTO> getActiveBirthdays() {
+        return birthdayResponseMapper.toDTOList(birthdayRepository.findActiveBirthdays());
+    }
+
+    @Transactional
+    public @NonNull List<BirthdayResponseDTO> getExpiredBirthdays() {
+        return birthdayResponseMapper.toDTOList(birthdayRepository.findExpiredBirthdays());
     }
 
     @Transactional

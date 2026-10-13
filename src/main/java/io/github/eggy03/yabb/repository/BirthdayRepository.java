@@ -6,6 +6,7 @@ import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 
@@ -16,11 +17,26 @@ public class BirthdayRepository implements PanacheRepositoryBase<Birthday, Birth
         return find("guildId = :value", Map.of("value", guildId)).list();
     }
 
-    public List<Birthday> findPendingBirthdays() {
-        return find("nextBirthdayAt <= :now", Map.of("now", Instant.now())).list();
-    }
-
     public long deleteByGuildId(long guildId) {
         return delete("guildId = :value", Map.of("value", guildId));
+    }
+
+
+    public List<Birthday> findUpcomingBirthdays() {
+        return find("nextBirthdayAt > :now", Map.of("now", Instant.now())).list();
+    }
+
+    public List<Birthday> findActiveBirthdays() {
+        Instant now = Instant.now();
+        Instant cutoff = now.minus(24, ChronoUnit.HOURS);
+
+        return find("nextBirthdayAt <= :now AND nextBirthdayAt >= :cutoff",
+                Map.of("now", now, "cutoff", cutoff)
+        ).list();
+    }
+
+    public List<Birthday> findExpiredBirthdays() {
+        Instant cutoff = Instant.now().minus(24, ChronoUnit.HOURS);
+        return find("nextBirthdayAt < :cutoff", Map.of("cutoff", cutoff)).list();
     }
 }
