@@ -59,7 +59,7 @@ public class BirthdayService {
 
         Birthday entity =  birthdayRepository
                 .findByIdOptional(new BirthdayId(updatedDTO.getGuildId(), updatedDTO.getUserId()))
-                .orElseThrow(()-> new BirthdayNotFoundException("No entry found for user: %s in guild: %s".formatted(updatedDTO.getGuildId(), updatedDTO.getUserId())));
+                .orElseThrow(()-> new BirthdayNotFoundException("No entry found for user: %s in guild: %s".formatted(updatedDTO.getUserId(), updatedDTO.getGuildId())));
 
         // dirty check
         entity.setMonth(updatedDTO.getMonth());
