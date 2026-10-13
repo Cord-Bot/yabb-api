@@ -22,7 +22,7 @@ public class ZoneRulesExceptionMapper implements ExceptionMapper<ZoneRulesExcept
     public Response toResponse(@NonNull ZoneRulesException e) {
 
         ErrorResponse errorResponse = new ErrorResponse(
-                Response.Status.NOT_FOUND.getStatusCode(),
+                Response.Status.BAD_REQUEST.getStatusCode(),
                 e.getClass().getSimpleName(),
                 e.getMessage() == null ? "N/A" : e.getMessage(),
                 OffsetDateTime.now(ZoneId.systemDefault()),
@@ -30,7 +30,7 @@ public class ZoneRulesExceptionMapper implements ExceptionMapper<ZoneRulesExcept
         );
 
         return Response
-                .status(Response.Status.NOT_FOUND)
+                .status(Response.Status.BAD_REQUEST)
                 .entity(errorResponse)
                 .build();
     }
