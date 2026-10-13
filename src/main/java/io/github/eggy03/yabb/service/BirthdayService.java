@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+import java.time.ZoneId;
 import java.util.List;
 
 @ApplicationScoped
@@ -30,7 +31,7 @@ public class BirthdayService {
 
         Birthday entity = birthdayRequestMapper.toEntity(dto);
         // calculate the next birthday time
-        entity.setNextBirthdayAt(BirthdayUtils.nextBirthdayAt(dto.getMonth(), dto.getDay(), dto.getZoneId()));
+        entity.setNextBirthdayAt(BirthdayUtils.nextBirthdayAt(dto.getDay(), dto.getMonth(), dto.getZoneId()));
 
         birthdayRepository.persist(entity);
     }
@@ -77,7 +78,7 @@ public class BirthdayService {
         entity.setZoneId(updatedDTO.getZoneId());
 
         // re-calculate the next birthday time
-        entity.setNextBirthdayAt(BirthdayUtils.nextBirthdayAt(updatedDTO.getMonth(), updatedDTO.getDay(), updatedDTO.getZoneId()));
+        entity.setNextBirthdayAt(BirthdayUtils.nextBirthdayAt(updatedDTO.getDay(), updatedDTO.getMonth(), updatedDTO.getZoneId()));
     }
 
     @Transactional
@@ -87,8 +88,13 @@ public class BirthdayService {
                 .findByIdOptional(new BirthdayId(dto.getGuildId(), dto.getUserId()))
                 .orElseThrow(()-> new BirthdayNotFoundException("No entry found for user: %s in guild: %s".formatted(dto.getGuildId(), dto.getUserId())));
 
+        // get current birthday year
+        int currentBirthdayYear = entity.getNextBirthdayAt().atZone(ZoneId.of(entity.getZoneId())).getYear();
+
         // dirty checking
-        entity.setNextBirthdayAt(BirthdayUtils.nextYearBirthdayAt(entity.getMonth(), entity.getDay(), entity.getZoneId()));
+        entity.setNextBirthdayAt(
+                BirthdayUtils.nextYearBirthdayAt(entity.getDay(), entity.getMonth(), currentBirthdayYear, entity.getZoneId())
+        );
     }
 
     @Transactional

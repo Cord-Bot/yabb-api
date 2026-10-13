@@ -13,18 +13,6 @@ import java.time.ZoneId;
 public class BirthdayUtils {
 
     /**
-     * Convenience method for {@link #nextBirthdayAt(MonthDay, ZoneId)}
-     */
-    @NonNull
-    public static Instant nextBirthdayAt(int birthMonth, int birthDay, @NonNull String zoneIdString) {
-
-        MonthDay birthMonthDay = MonthDay.of(birthMonth, birthDay);
-        ZoneId zoneId = ZoneId.of(zoneIdString);
-
-        return nextBirthdayAt(birthMonthDay, zoneId);
-    }
-
-    /**
      * Calculates the next instant for a given birth month and day.
      *
      * <p>If the birth month and day has already passed in the current year (in the user's time-zone),
@@ -87,14 +75,18 @@ public class BirthdayUtils {
      *   </tr>
      * </table>
      *
-     * @param birthMonthDay the birth month and day
-     * @param zoneId     the IANA time zone in which the birthday should be evaluated
+     * @param birthDay     the birthday
+     * @param birthMonth   the birth month
+     * @param zoneIdString the IANA time zone in which the birthday should be evaluated
      * @return the start of the next applicable birthday in the specified time zone,
      * represented as an {@link Instant}
-     * @throws NullPointerException if {@code zoneId} is null
+     * @throws NullPointerException if {@code zoneIdString} is null
      */
     @NonNull
-    public static Instant nextBirthdayAt(@NonNull MonthDay birthMonthDay, @NonNull ZoneId zoneId) {
+    public static Instant nextBirthdayAt(int birthDay, int birthMonth, @NonNull String zoneIdString) {
+
+        MonthDay birthMonthDay = MonthDay.of(birthMonth, birthDay);
+        ZoneId zoneId = ZoneId.of(zoneIdString);
 
         Year currentYear = Year.now(zoneId);
 
@@ -108,24 +100,7 @@ public class BirthdayUtils {
     }
 
     /**
-     * Convenience method for {@link #nextYearBirthdayAt(MonthDay, ZoneId)}
-     */
-    @NonNull
-    public static Instant nextYearBirthdayAt(int birthMonth, int birthDay, @NonNull String zoneIdString) {
-
-        MonthDay birthMonthDay = MonthDay.of(birthMonth, birthDay);
-        ZoneId zoneId = ZoneId.of(zoneIdString);
-
-        return nextYearBirthdayAt(birthMonthDay, zoneId);
-    }
-
-    /**
-     * Calculates the birthday for the following year.
-     *
-     * <p>Unlike {@link #nextBirthdayAt(MonthDay, ZoneId)}, this method always
-     * returns birthday for the following year. It does not check whether
-     * the birthday has already occurred, is today, or is still upcoming in the
-     * current year.</p>
+     * Adds a year to the provided birthday.
      *
      * <p>The birthday is evaluated at {@code 00:00} in the provided IANA
      * time zone and converted to an {@link Instant}.</p>
@@ -133,22 +108,49 @@ public class BirthdayUtils {
      * <p>Leap-day birthdays ({@code February 29}) are treated as
      * {@code February 28} when the following year is not a leap year.</p>
      *
-     * <p>NOTE: This method always uses the present year for the given {@code ZoneId}.
-     * All calculations are based on the present year.</p>
-     *
-     * @param birthMonthDay the birthday month and day
-     * @param zoneId the IANA time zone in which the birthday is evaluated
-     * @return the birthday notification time in the following year as an
-     *         {@link Instant}
-     * @throws NullPointerException if {@code birthMonthDay} or {@code zoneId}
-     *         is null
+     * @param birthDay     the birthday
+     * @param birthMonth   the birth month
+     * @param currentYear  the year on which this birthday has occurred or was supposed to occur
+     * @param zoneIdString the IANA time zone in which the birthday is evaluated
+     * @return the birthday time after adding a year, as an
+     * {@link Instant}
+     * @throws NullPointerException if {@code zoneIdString} is null
      */
     @NonNull
-    public static Instant nextYearBirthdayAt(@NonNull MonthDay birthMonthDay, @NonNull ZoneId zoneId) {
+    public static Instant nextYearBirthdayAt(int birthDay, int birthMonth, int currentYear, @NonNull String zoneIdString) {
 
-        Year currentYear = Year.now(zoneId);
-        LocalDate nextYearBirthDate = currentYear.plusYears(1).atMonthDay(birthMonthDay);
+        // previously this used to use Year.now()
+        // that is it could always take the current year and add 1 to it
 
-        return nextYearBirthDate.atStartOfDay(zoneId).toInstant();
+        // however this would create the following issue
+        // Suppose a birthday which was supposed to occur on 31 December 2026
+        // did not occur because the bot was down
+        // Now, on January 2, 2027, the API calls this function on that expired birthday
+        // to silently update for December 31, 2027
+
+        // but since Year.now() was used for calculation and was called on January 2, 2027,
+        // it would set the next birthday to December 31, 2028, instead
+        // the newest change adds 1 year based on the currentYear received
+
+        // do not use LocalDate.of(currentYear, birthMonth, birthDay)
+        // because currentYear, birthMonth, birthDay are not tightly related and may be invalid for a given year
+        // this is because birthDay and birthMonth represents a user's birthday and month
+        // while currentYear represents the last known year on which a person was wished
+        // it may or may not have been a leap year
+        // so if someone's birthday and month is February 29 but the current year received is 2025
+        // LocalDate will throw error
+        // MonthDay.atYear will convert February 29 to 28
+        return MonthDay.of(birthMonth, birthDay)
+                .atYear(currentYear)
+                .plusYears(1)
+                .atStartOfDay(ZoneId.of(zoneIdString))
+                .toInstant();
+
+        // future reference: the reason why currentYear, birthMonth, birthDay was provided
+        // instead of the direct Instant at which the last birthday had occurred
+        // is because non leap year instants would be converted to 28 Feb and adding +1 to it would've always
+        // kept it 28
+        // we want leap year birthdays to happen in 29 itself, so by freshly providing birthMonth, birthDay
+        // we preserve the actual birthday and month of a user
     }
 }
