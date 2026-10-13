@@ -21,16 +21,12 @@
           "month" : {
             "type" : "integer",
             "format" : "int32",
-            "examples" : [ 8 ],
-            "maximum" : 12,
-            "minimum" : 1
+            "examples" : [ 8 ]
           },
           "day" : {
             "type" : "integer",
             "format" : "int32",
-            "examples" : [ 29 ],
-            "maximum" : 31,
-            "minimum" : 1
+            "examples" : [ 29 ]
           },
           "zoneId" : {
             "type" : "string",
@@ -257,10 +253,74 @@
         }
       }
     },
-    "/api/v1/birthday/pending" : {
+    "/api/v1/birthday/active" : {
       "get" : {
-        "summary" : "Get Pending Birthday List",
-        "operationId" : "getPendingBirthdays",
+        "summary" : "Get a list of birthdays overdue by at most 24 hours",
+        "operationId" : "getActiveBirthdays",
+        "tags" : [ "Birthday" ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/BirthdayResponseDTO"
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/birthday/expired" : {
+      "get" : {
+        "summary" : "Get a list of birthdays overdue by more than 24 hours",
+        "operationId" : "getExpiredBirthdays",
+        "tags" : [ "Birthday" ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/BirthdayResponseDTO"
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/birthday/upcoming" : {
+      "get" : {
+        "summary" : "Get a list of birthdays due in the future",
+        "operationId" : "getUpcomingBirthdays",
         "tags" : [ "Birthday" ],
         "responses" : {
           "200" : {
