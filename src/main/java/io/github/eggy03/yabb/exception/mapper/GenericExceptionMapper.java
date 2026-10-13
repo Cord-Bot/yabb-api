@@ -8,7 +8,7 @@ import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 
 @Provider
@@ -27,7 +27,7 @@ public class GenericExceptionMapper implements ExceptionMapper<Exception> {
                 Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                 e.getClass().getSimpleName(),
                 e.getMessage(),
-                LocalDateTime.now(ZoneId.systemDefault()),
+                OffsetDateTime.now(ZoneId.systemDefault()),
                 uriInfo.getPath()
         );
 

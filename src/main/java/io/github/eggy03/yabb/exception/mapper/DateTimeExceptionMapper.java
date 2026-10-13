@@ -8,7 +8,7 @@ import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 
 import java.time.DateTimeException;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 
 @Provider
@@ -24,7 +24,7 @@ public class DateTimeExceptionMapper implements ExceptionMapper<DateTimeExceptio
                 Response.Status.BAD_REQUEST.getStatusCode(),
                 e.getClass().getSimpleName(),
                 e.getMessage(),
-                LocalDateTime.now(ZoneId.systemDefault()),
+                OffsetDateTime.now(ZoneId.systemDefault()),
                 uriInfo.getPath()
         );
 

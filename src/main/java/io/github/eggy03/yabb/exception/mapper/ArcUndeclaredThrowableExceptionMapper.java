@@ -9,7 +9,7 @@ import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 import org.hibernate.exception.ConstraintViolationException;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 
 @Provider
@@ -34,7 +34,7 @@ public class ArcUndeclaredThrowableExceptionMapper implements ExceptionMapper<Ar
                 Response.Status.CONFLICT.getStatusCode(),
                 cve.getClass().getSimpleName(),
                 cve.getMessage(),
-                LocalDateTime.now(ZoneId.systemDefault()),
+                OffsetDateTime.now(ZoneId.systemDefault()),
                 uriInfo.getPath()
         );
 
@@ -49,7 +49,7 @@ public class ArcUndeclaredThrowableExceptionMapper implements ExceptionMapper<Ar
                 Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                 e.getClass().getSimpleName(),
                 e.getMessage(),
-                LocalDateTime.now(ZoneId.systemDefault()),
+                OffsetDateTime.now(ZoneId.systemDefault()),
                 uriInfo.getPath()
         );
 
