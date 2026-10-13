@@ -8,6 +8,7 @@ import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 import org.hibernate.exception.ConstraintViolationException;
+import org.jspecify.annotations.NonNull;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -19,7 +20,7 @@ public class ArcUndeclaredThrowableExceptionMapper implements ExceptionMapper<Ar
     UriInfo uriInfo;
 
     @Override
-    public Response toResponse(ArcUndeclaredThrowableException e) {
+    public Response toResponse(@NonNull ArcUndeclaredThrowableException e) {
 
         // CVE is wrapped in RollbackException which is wrapped in ArcUndeclaredThrowableException
         if (e.getCause().getCause() instanceof ConstraintViolationException cve) {
@@ -29,13 +30,13 @@ public class ArcUndeclaredThrowableExceptionMapper implements ExceptionMapper<Ar
         return genericResponse(e);
     }
 
-    private Response cveResponse(ConstraintViolationException cve) {
+    private Response cveResponse(@NonNull ConstraintViolationException cve) {
         ErrorResponse errorResponse = new ErrorResponse(
                 Response.Status.CONFLICT.getStatusCode(),
                 cve.getClass().getSimpleName(),
-                cve.getMessage(),
+                cve.getMessage() == null ? "N/A" : cve.getMessage(),
                 OffsetDateTime.now(ZoneId.systemDefault()),
-                uriInfo.getPath()
+                uriInfo.getPath() == null ? "N/A" : uriInfo.getPath()
         );
 
         return Response
@@ -44,13 +45,14 @@ public class ArcUndeclaredThrowableExceptionMapper implements ExceptionMapper<Ar
                 .build();
     }
 
-    private Response genericResponse(ArcUndeclaredThrowableException e) {
+    private Response genericResponse(@NonNull ArcUndeclaredThrowableException e) {
+
         ErrorResponse errorResponse = new ErrorResponse(
                 Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                 e.getClass().getSimpleName(),
-                e.getMessage(),
+                e.getMessage() == null ? "N/A" : e.getMessage(),
                 OffsetDateTime.now(ZoneId.systemDefault()),
-                uriInfo.getPath()
+                uriInfo.getPath() == null ? "N/A" : uriInfo.getPath()
         );
 
         return Response

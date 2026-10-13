@@ -6,6 +6,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
+import org.jspecify.annotations.NonNull;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -18,14 +19,14 @@ public class ZoneRulesExceptionMapper implements ExceptionMapper<ZoneRulesExcept
     UriInfo uriInfo;
 
     @Override
-    public Response toResponse(ZoneRulesException e) {
+    public Response toResponse(@NonNull ZoneRulesException e) {
 
         ErrorResponse errorResponse = new ErrorResponse(
                 Response.Status.NOT_FOUND.getStatusCode(),
                 e.getClass().getSimpleName(),
-                e.getMessage(),
+                e.getMessage() == null ? "N/A" : e.getMessage(),
                 OffsetDateTime.now(ZoneId.systemDefault()),
-                uriInfo.getPath()
+                uriInfo.getPath() == null ? "N/A" : uriInfo.getPath()
         );
 
         return Response

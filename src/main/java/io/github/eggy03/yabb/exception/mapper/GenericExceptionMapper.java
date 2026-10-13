@@ -26,9 +26,9 @@ public class GenericExceptionMapper implements ExceptionMapper<Exception> {
         ErrorResponse errorResponse = new ErrorResponse(
                 Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                 e.getClass().getSimpleName(),
-                e.getMessage(),
+                e.getMessage() == null ? "N/A" : e.getMessage(),
                 OffsetDateTime.now(ZoneId.systemDefault()),
-                uriInfo.getPath()
+                uriInfo.getPath() == null ? "N/A" : uriInfo.getPath()
         );
 
         return Response
