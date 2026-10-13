@@ -1,10 +1,5 @@
 {
   "openapi" : "3.1.0",
-  "tags" : [ {
-    "name" : "Birthday"
-  }, {
-    "name" : "Guild"
-  } ],
   "components" : {
     "schemas" : {
       "BirthdayRequestDTO" : {
@@ -50,26 +45,31 @@
           "guildId" : {
             "type" : "integer",
             "format" : "int64",
+            "readOnly" : true,
             "examples" : [ 123456789012345678 ]
           },
           "userId" : {
             "type" : "integer",
             "format" : "int64",
+            "readOnly" : true,
             "examples" : [ 987654321098765432 ]
           },
           "month" : {
             "type" : "integer",
             "format" : "int32",
+            "readOnly" : true,
             "examples" : [ 8 ]
           },
           "day" : {
             "type" : "integer",
             "format" : "int32",
+            "readOnly" : true,
             "examples" : [ 29 ]
           },
           "zoneId" : {
             "type" : "string",
             "description" : "IANA time zone ID",
+            "readOnly" : true,
             "examples" : [ "Asia/Kolkata" ]
           },
           "nextBirthdayAt" : {
@@ -81,23 +81,32 @@
         }
       },
       "ErrorResponse" : {
+        "description" : "Standard API error response",
         "type" : "object",
+        "required" : [ "status", "error", "message", "timeStamp", "path" ],
         "properties" : {
           "status" : {
             "type" : "integer",
-            "format" : "int32"
+            "format" : "int32",
+            "readOnly" : true
           },
           "error" : {
-            "type" : "string"
+            "type" : "string",
+            "readOnly" : true
           },
           "message" : {
-            "type" : "string"
+            "type" : "string",
+            "readOnly" : true
           },
           "timeStamp" : {
-            "$ref" : "#/components/schemas/LocalDateTime"
+            "$ref" : "#/components/schemas/OffsetDateTime",
+            "readOnly" : true,
+            "type" : "string",
+            "examples" : [ "2026-10-13T05:09:08.496915684+05:30" ]
           },
           "path" : {
-            "type" : "string"
+            "type" : "string",
+            "readOnly" : true
           }
         }
       },
@@ -133,13 +142,18 @@
         "format" : "date-time",
         "examples" : [ "2022-03-10T16:15:50Z" ]
       },
-      "LocalDateTime" : {
+      "OffsetDateTime" : {
         "type" : "string",
         "format" : "date-time",
-        "examples" : [ "2022-03-10T12:15:50" ]
+        "examples" : [ "2022-03-10T12:15:50-04:00" ]
       }
     }
   },
+  "tags" : [ {
+    "name" : "Birthday"
+  }, {
+    "name" : "Guild"
+  } ],
   "paths" : {
     "/api/v1/birthday" : {
       "patch" : {
