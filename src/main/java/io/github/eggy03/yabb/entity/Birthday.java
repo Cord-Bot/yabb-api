@@ -19,7 +19,7 @@ import java.time.Instant;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "birthday_table")
+@Table(name = "birthday_table", schema = "yabb")
 @IdClass(BirthdayId.class)
 public class Birthday {
 

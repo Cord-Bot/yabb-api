@@ -16,7 +16,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "guild_table")
+@Table(name = "guild_table", schema = "yabb")
 public class Guild {
 
     @Id
