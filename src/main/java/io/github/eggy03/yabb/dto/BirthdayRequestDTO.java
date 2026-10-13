@@ -1,7 +1,7 @@
 package io.github.eggy03.yabb.dto;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
+import io.github.eggy03.yabb.validation.monthday.ValidBirthMonthDay;
+import io.github.eggy03.yabb.validation.zone.ValidTimeZone;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
@@ -12,6 +12,8 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ValidBirthMonthDay
+@ValidTimeZone
 public class BirthdayRequestDTO {
 
     @NotNull(message = "GuildID cannot be null")
@@ -25,14 +27,10 @@ public class BirthdayRequestDTO {
     private Long userId;
 
     @NotNull(message = "Birth Month cannot be null")
-    @Min(value = 1, message = "Birth Month must be between 1 and 12")
-    @Max(value = 12, message = "Birth Month must be between 1 and 12")
     @Schema(required = true, examples = "8")
     private Integer month;
 
     @NotNull(message = "Birth Day cannot be null")
-    @Min(value = 1, message = "Birth Day must be between 1 and 31")
-    @Max(value = 31, message = "Birth Day must be between 1 and 31")
     @Schema(required = true, examples = "29")
     private Integer day;
 
