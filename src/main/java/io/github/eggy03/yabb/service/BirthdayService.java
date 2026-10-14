@@ -91,11 +91,18 @@ public class BirthdayService {
                 .findByIdOptional(new BirthdayId(dto.getGuildId(), dto.getUserId()))
                 .orElseThrow(()-> new BirthdayNotFoundException("No entry found for user: %s in guild: %s".formatted(dto.getGuildId(), dto.getUserId())));
 
-        // get the latest birthday year and add 1 to it
+        // get the latest birthday year and advance it by 1
         int year = entity.getUpcomingBirthday().atZone(ZoneId.of(entity.getZoneId())).getYear() + 1;
 
         // dirty checking
         entity.setUpcomingBirthday(
+                // recalculate the birthday using the provided birthday and birthmonth but with the advanced year
+                // never recalculate first and then advance the year cause it will lose leap day and month information
+                // Example: Birthday: 29, Birthmonth: 2
+                // Latest Year: 2027
+                // To Advance To: 2028
+                // If we run the util function on the latest year and then advance the year, it will change the date to 28 because 2027 is not a leap year
+                // and the final date would be 28 Feb 2028. But we could have had 29 on 2028 cause it's a leap year. This is info loss.
                 BirthdayUtils.calculateBirthdayForYear(entity.getDay(), entity.getMonth(), year, entity.getZoneId())
         );
     }
