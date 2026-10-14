@@ -91,12 +91,12 @@ public class BirthdayService {
                 .findByIdOptional(new BirthdayId(dto.getGuildId(), dto.getUserId()))
                 .orElseThrow(()-> new BirthdayNotFoundException("No entry found for user: %s in guild: %s".formatted(dto.getGuildId(), dto.getUserId())));
 
-        // get current birthday year
-        int currentBirthdayYear = entity.getUpcomingBirthday().atZone(ZoneId.of(entity.getZoneId())).getYear();
+        // get the latest birthday year and add 1 to it
+        int year = entity.getUpcomingBirthday().atZone(ZoneId.of(entity.getZoneId())).getYear() + 1;
 
         // dirty checking
         entity.setUpcomingBirthday(
-                BirthdayUtils.nextYearBirthdayAt(entity.getDay(), entity.getMonth(), currentBirthdayYear, entity.getZoneId())
+                BirthdayUtils.calculateBirthdayForYear(entity.getDay(), entity.getMonth(), year, entity.getZoneId())
         );
     }
 
