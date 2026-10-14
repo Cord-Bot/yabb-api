@@ -30,8 +30,11 @@ public class BirthdayService {
     public void saveBirthday(@NonNull BirthdayRequestDTO dto) {
 
         Birthday entity = birthdayRequestMapper.toEntity(dto);
-        // calculate the next birthday time
-        entity.setNextBirthdayAt(BirthdayUtils.nextBirthdayAt(dto.getDay(), dto.getMonth(), dto.getZoneId()));
+
+        // calculate the upcoming birthday
+        entity.setUpcomingBirthday(
+                BirthdayUtils.calculateUpcomingBirthday(dto.getDay(), dto.getMonth(), dto.getZoneId())
+        );
 
         birthdayRepository.persist(entity);
     }
@@ -77,8 +80,8 @@ public class BirthdayService {
         entity.setDay(updatedDTO.getDay());
         entity.setZoneId(updatedDTO.getZoneId());
 
-        // re-calculate the next birthday time
-        entity.setNextBirthdayAt(BirthdayUtils.nextBirthdayAt(updatedDTO.getDay(), updatedDTO.getMonth(), updatedDTO.getZoneId()));
+        // re-calculate the upcoming birthday time
+        entity.setUpcomingBirthday(BirthdayUtils.calculateUpcomingBirthday(updatedDTO.getDay(), updatedDTO.getMonth(), updatedDTO.getZoneId()));
     }
 
     @Transactional
@@ -89,10 +92,10 @@ public class BirthdayService {
                 .orElseThrow(()-> new BirthdayNotFoundException("No entry found for user: %s in guild: %s".formatted(dto.getGuildId(), dto.getUserId())));
 
         // get current birthday year
-        int currentBirthdayYear = entity.getNextBirthdayAt().atZone(ZoneId.of(entity.getZoneId())).getYear();
+        int currentBirthdayYear = entity.getUpcomingBirthday().atZone(ZoneId.of(entity.getZoneId())).getYear();
 
         // dirty checking
-        entity.setNextBirthdayAt(
+        entity.setUpcomingBirthday(
                 BirthdayUtils.nextYearBirthdayAt(entity.getDay(), entity.getMonth(), currentBirthdayYear, entity.getZoneId())
         );
     }

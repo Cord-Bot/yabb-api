@@ -27,6 +27,6 @@ public class BirthdayResponseDTO {
     @Schema(required = true, readOnly = true, description = "IANA time zone ID", examples = {"Asia/Kolkata"})
     private String zoneId;
 
-    @Schema(required = true, description = "Next scheduled birthday notification time in UTC", examples = {"2027-08-28T18:30:00Z"})
-    private Instant nextBirthdayAt;
+    @Schema(required = true, description = "Upcoming birth date and time", examples = {"2027-08-28T18:30:00Z"})
+    private Instant upcomingBirthday;
 }

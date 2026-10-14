@@ -83,7 +83,7 @@ public class BirthdayUtils {
      * @throws NullPointerException if {@code zoneIdString} is null
      */
     @NonNull
-    public static Instant nextBirthdayAt(int birthDay, int birthMonth, @NonNull String zoneIdString) {
+    public static Instant calculateUpcomingBirthday(int birthDay, int birthMonth, @NonNull String zoneIdString) {
 
         MonthDay birthMonthDay = MonthDay.of(birthMonth, birthDay);
         ZoneId zoneId = ZoneId.of(zoneIdString);

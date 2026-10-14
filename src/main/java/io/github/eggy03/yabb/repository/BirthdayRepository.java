@@ -23,20 +23,20 @@ public class BirthdayRepository implements PanacheRepositoryBase<Birthday, Birth
 
 
     public List<Birthday> findUpcomingBirthdays() {
-        return find("nextBirthdayAt > :now", Map.of("now", Instant.now())).list();
+        return find("upcomingBirthday > :now", Map.of("now", Instant.now())).list();
     }
 
     public List<Birthday> findActiveBirthdays() {
         Instant now = Instant.now();
         Instant cutoff = now.minus(24, ChronoUnit.HOURS);
 
-        return find("nextBirthdayAt <= :now AND nextBirthdayAt >= :cutoff",
+        return find("upcomingBirthday <= :now AND upcomingBirthday >= :cutoff",
                 Map.of("now", now, "cutoff", cutoff)
         ).list();
     }
 
     public List<Birthday> findExpiredBirthdays() {
         Instant cutoff = Instant.now().minus(24, ChronoUnit.HOURS);
-        return find("nextBirthdayAt < :cutoff", Map.of("cutoff", cutoff)).list();
+        return find("upcomingBirthday < :cutoff", Map.of("cutoff", cutoff)).list();
     }
 }
