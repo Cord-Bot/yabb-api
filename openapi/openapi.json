@@ -36,7 +36,7 @@
       },
       "BirthdayResponseDTO" : {
         "type" : "object",
-        "required" : [ "guildId", "userId", "month", "day", "zoneId", "nextBirthdayAt" ],
+        "required" : [ "guildId", "userId", "month", "day", "zoneId", "upcomingBirthday" ],
         "properties" : {
           "guildId" : {
             "type" : "integer",
@@ -68,9 +68,9 @@
             "readOnly" : true,
             "examples" : [ "Asia/Kolkata" ]
           },
-          "nextBirthdayAt" : {
+          "upcomingBirthday" : {
             "$ref" : "#/components/schemas/Instant",
-            "description" : "Next scheduled birthday notification time in UTC",
+            "description" : "Upcoming birth date and time",
             "type" : "string",
             "examples" : [ "2027-08-28T18:30:00Z" ]
           }
