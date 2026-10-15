@@ -80,7 +80,6 @@ public class BirthdayScheduleController {
     @Blocking
     @RunOnVirtualThread
     @Operation(operationId = "advance", summary = "Update schedule for next year")
-    @RequestBody(content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayDTO.class)))
     @APIResponse(responseCode = "204", description = "Success")
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "404", description = "Schedule not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))

@@ -300,16 +300,6 @@
             "exclusiveMinimum" : 0
           }
         } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/BirthdayDTO"
-              }
-            }
-          },
-          "required" : true
-        },
         "responses" : {
           "204" : {
             "description" : "Success"
