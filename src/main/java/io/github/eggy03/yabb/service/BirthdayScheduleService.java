@@ -1,11 +1,13 @@
 package io.github.eggy03.yabb.service;
 
-import io.github.eggy03.yabb.dto.BirthdayDTO;
 import io.github.eggy03.yabb.dto.BirthdayScheduleDTO;
+import io.github.eggy03.yabb.entity.Birthday;
 import io.github.eggy03.yabb.entity.BirthdayId;
 import io.github.eggy03.yabb.entity.BirthdaySchedule;
+import io.github.eggy03.yabb.exception.BirthdayNotFoundException;
 import io.github.eggy03.yabb.exception.BirthdayScheduleNotFoundException;
 import io.github.eggy03.yabb.mapper.BirthdayScheduleMapper;
+import io.github.eggy03.yabb.repository.BirthdayRepository;
 import io.github.eggy03.yabb.repository.BirthdayScheduleRepository;
 import io.github.eggy03.yabb.utility.BirthdayScheduleUtils;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -22,16 +24,7 @@ public class BirthdayScheduleService {
 
     private final @NonNull BirthdayScheduleMapper birthdayScheduleMapper;
     private final @NonNull BirthdayScheduleRepository birthdayScheduleRepository;
-
-    @Transactional
-    public void saveSchedule(@NonNull BirthdayDTO dto) {
-        // create schedule entity
-        BirthdaySchedule birthdaySchedule = new BirthdaySchedule(dto.getGuildId(), dto.getUserId(), null);
-        birthdaySchedule.setUpcomingBirthdayAt(BirthdayScheduleUtils.calculateUpcomingBirthday(dto.getDay(), dto.getMonth(), dto.getZoneId()));
-
-        // persist schedule
-        birthdayScheduleRepository.persist(birthdaySchedule);
-    }
+    private final @NonNull BirthdayRepository birthdayRepository;
 
     @Transactional
     public @NonNull List<BirthdayScheduleDTO> getUpcomingSchedules() {
@@ -49,33 +42,29 @@ public class BirthdayScheduleService {
     }
 
     @Transactional
-    public void updateSchedule(@NonNull BirthdayDTO updatedDTO) {
+    public void advanceSchedule(long scheduleGuildId, long scheduleUserId) {
 
+        // find the schedule
         BirthdaySchedule birthdaySchedule = birthdayScheduleRepository
-                .findByIdOptional(new BirthdayId(updatedDTO.getGuildId(), updatedDTO.getUserId()))
-                .orElseThrow(()-> new BirthdayScheduleNotFoundException("No schedule found for user: [%s] in guild: [%s]".formatted(updatedDTO.getUserId(), updatedDTO.getGuildId())));
+                .findByIdOptional(new BirthdayId(scheduleGuildId, scheduleUserId))
+                .orElseThrow(()-> new BirthdayScheduleNotFoundException("No schedule found for user: [%s] in guild: [%s]".formatted(scheduleUserId, scheduleGuildId)));
 
-        // dirty update for schedule
-        birthdaySchedule.setUpcomingBirthdayAt(
-                BirthdayScheduleUtils.calculateUpcomingBirthday(updatedDTO.getDay(), updatedDTO.getMonth(), updatedDTO.getZoneId())
-        );
+        // find the birthday linked to this schedule
+        Birthday birthday = birthdayRepository
+                .findByIdOptional(new BirthdayId(scheduleGuildId, scheduleUserId))
+                .orElseThrow(()-> new BirthdayNotFoundException("No birthday found for user: [%s] in guild: [%s]".formatted(scheduleUserId, scheduleGuildId)));
 
-    }
+        int day = birthday.getDay();
+        int month = birthday.getMonth();
+        String timeZone = birthday.getZoneId();
 
-    @Transactional
-    public void advanceSchedule(@NonNull BirthdayDTO dto) {
-
-        BirthdaySchedule birthdaySchedule = birthdayScheduleRepository
-                .findByIdOptional(new BirthdayId(dto.getGuildId(), dto.getUserId()))
-                .orElseThrow(()-> new BirthdayScheduleNotFoundException("No entry found for user: [%s] in guild: [%s]".formatted(dto.getUserId(), dto.getGuildId())));
-
-        // get the latest birthday year and advance it by 1
-        int year = birthdaySchedule
+        // get the latest year from the schedule and advance it by 1
+        int nextYear = birthdaySchedule
                 .getUpcomingBirthdayAt()
-                .atZone(ZoneId.of(dto.getZoneId()))
+                .atZone(ZoneId.of(timeZone))
                 .getYear() + 1;
 
-        // dirty update
+        // update schedule via dirty checking
         birthdaySchedule.setUpcomingBirthdayAt(
                 // recalculate the birthday using the provided birthday and birthmonth but with the advanced year
                 // never recalculate first and then advance the year cause it will lose leap day and month information
@@ -84,7 +73,7 @@ public class BirthdayScheduleService {
                 // To Advance To: 2028
                 // If we run the util function on the latest year and then advance the year, it will change the date to 28 because 2027 is not a leap year
                 // and the final date would be 28 Feb 2028. But we could have had 29 on 2028 cause it's a leap year. This is info loss.
-                BirthdayScheduleUtils.calculateBirthdayForYear(dto.getDay(), dto.getMonth(), year, dto.getZoneId())
+                BirthdayScheduleUtils.calculateBirthdayForYear(day, month, nextYear, timeZone)
         );
     }
 }

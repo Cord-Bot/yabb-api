@@ -7,11 +7,12 @@ import io.github.eggy03.yabb.service.BirthdayScheduleService;
 import io.smallrye.common.annotation.Blocking;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -74,7 +76,7 @@ public class BirthdayScheduleController {
     }
 
     @PATCH
-    @Path("/advance")
+    @Path("/advance/{scheduleGuildId}/{scheduleUserId}")
     @Blocking
     @RunOnVirtualThread
     @Operation(operationId = "advance", summary = "Update schedule for next year")
@@ -83,8 +85,8 @@ public class BirthdayScheduleController {
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "404", description = "Schedule not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
-    public Response advanceSchedule(@Valid BirthdayDTO dto) {
-        birthdayScheduleService.advanceSchedule(dto);
+    public Response advanceSchedule(@Parameter(required = true) @PathParam("scheduleGuildId") @Positive long scheduleGuildId, @Parameter(required = true) @PathParam("scheduleUserId") @Positive long scheduleUserId) {
+        birthdayScheduleService.advanceSchedule(scheduleGuildId, scheduleUserId);
         return Response.noContent().build();
     }
 }
