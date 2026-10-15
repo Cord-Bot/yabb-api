@@ -276,11 +276,30 @@
         }
       }
     },
-    "/api/v1/birthday/schedule/advance" : {
+    "/api/v1/birthday/schedule/advance/{scheduleGuildId}/{scheduleUserId}" : {
       "patch" : {
         "summary" : "Update schedule for next year",
         "operationId" : "advance",
         "tags" : [ "Birthday Schedule" ],
+        "parameters" : [ {
+          "required" : true,
+          "name" : "scheduleGuildId",
+          "in" : "path",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64",
+            "exclusiveMinimum" : 0
+          }
+        }, {
+          "required" : true,
+          "name" : "scheduleUserId",
+          "in" : "path",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64",
+            "exclusiveMinimum" : 0
+          }
+        } ],
         "requestBody" : {
           "content" : {
             "application/json" : {
