@@ -4,7 +4,7 @@
 
     <groupId>io.github.eggy03</groupId>
     <artifactId>yabb-api</artifactId>
-    <version>0.0.1</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>quarkus</packaging>
 
     <properties>
