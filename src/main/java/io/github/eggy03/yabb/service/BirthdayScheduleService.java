@@ -27,6 +27,16 @@ public class BirthdayScheduleService {
     private final @NonNull BirthdayRepository birthdayRepository;
 
     @Transactional
+    public BirthdayScheduleDTO getSchedule(long guildId, long userId) {
+
+        BirthdaySchedule entity =  birthdayScheduleRepository
+                .findByIdOptional(new BirthdayId(guildId, userId))
+                .orElseThrow(()-> new BirthdayScheduleNotFoundException("No birthday schedule found for user: [%s] in guild: [%s]".formatted(userId, guildId)));
+
+        return birthdayScheduleMapper.toDTO(entity);
+    }
+
+    @Transactional
     public @NonNull List<BirthdayScheduleDTO> getUpcomingSchedules() {
         return birthdayScheduleMapper.toDTOList(birthdayScheduleRepository.findUpcomingSchedules());
     }
@@ -42,17 +52,17 @@ public class BirthdayScheduleService {
     }
 
     @Transactional
-    public void advanceSchedule(long scheduleGuildId, long scheduleUserId) {
+    public void advanceSchedule(long guildId, long userId) {
 
         // find the schedule
         BirthdaySchedule birthdaySchedule = birthdayScheduleRepository
-                .findByIdOptional(new BirthdayId(scheduleGuildId, scheduleUserId))
-                .orElseThrow(()-> new BirthdayScheduleNotFoundException("No schedule found for user: [%s] in guild: [%s]".formatted(scheduleUserId, scheduleGuildId)));
+                .findByIdOptional(new BirthdayId(guildId, userId))
+                .orElseThrow(()-> new BirthdayScheduleNotFoundException("No birthday schedule found for user: [%s] in guild: [%s]".formatted(userId, guildId)));
 
         // find the birthday linked to this schedule
         Birthday birthday = birthdayRepository
-                .findByIdOptional(new BirthdayId(scheduleGuildId, scheduleUserId))
-                .orElseThrow(()-> new BirthdayNotFoundException("No birthday found for user: [%s] in guild: [%s]".formatted(scheduleUserId, scheduleGuildId)));
+                .findByIdOptional(new BirthdayId(guildId, userId))
+                .orElseThrow(()-> new BirthdayNotFoundException("No birthday found for user: [%s] in guild: [%s]".formatted(userId, guildId)));
 
         int day = birthday.getDay();
         int month = birthday.getMonth();

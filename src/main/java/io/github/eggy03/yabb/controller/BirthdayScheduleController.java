@@ -1,6 +1,5 @@
 package io.github.eggy03.yabb.controller;
 
-import io.github.eggy03.yabb.dto.BirthdayDTO;
 import io.github.eggy03.yabb.dto.BirthdayScheduleDTO;
 import io.github.eggy03.yabb.exception.entity.ErrorResponse;
 import io.github.eggy03.yabb.service.BirthdayScheduleService;
@@ -22,7 +21,6 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
-import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -37,13 +35,26 @@ public class BirthdayScheduleController {
     private final @NonNull BirthdayScheduleService birthdayScheduleService;
 
     @GET
+    @Path("/{guildId}/{userId}")
+    @Blocking
+    @RunOnVirtualThread
+    @Operation(operationId = "getSchedule", summary = "Get birthday schedule for a particular guild and user")
+    @APIResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayScheduleDTO.class)))
+    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
+    public Response getSchedule(@Parameter(required = true) @PathParam("guildId") @Positive long guildId, @Parameter(required = true) @PathParam("userId") @Positive long userId) {
+        return Response
+                .ok(birthdayScheduleService.getSchedule(guildId, userId))
+                .build();
+    }
+
+    @GET
     @Path("/upcoming")
     @Blocking
     @RunOnVirtualThread
-    @Operation(operationId = "getUpcomingSchedules", summary = "Get a list of schedules due in the future")
+    @Operation(operationId = "getUpcomingSchedules", summary = "Get a list of birthday schedules due in the future")
     @APIResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayScheduleDTO[].class)))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
-    public Response getUpcoming() {
+    public Response getUpcomingSchedules() {
         return Response
                 .ok(birthdayScheduleService.getUpcomingSchedules())
                 .build();
@@ -53,10 +64,10 @@ public class BirthdayScheduleController {
     @Path("/active")
     @Blocking
     @RunOnVirtualThread
-    @Operation(operationId = "getActiveSchedules", summary = "Get a list of schedules overdue by at most 24 hours")
+    @Operation(operationId = "getActiveSchedules", summary = "Get a list of birthday schedules overdue by at most 24 hours")
     @APIResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayScheduleDTO[].class)))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
-    public Response getActiveBirthdays() {
+    public Response getActiveSchedules() {
         return Response
                 .ok(birthdayScheduleService.getActiveSchedules())
                 .build();
@@ -66,26 +77,26 @@ public class BirthdayScheduleController {
     @Path("/expired")
     @Blocking
     @RunOnVirtualThread
-    @Operation(operationId = "getExpiredSchedules", summary = "Get a list of schedules overdue by more than 24 hours")
+    @Operation(operationId = "getExpiredSchedules", summary = "Get a list of birthday schedules overdue by more than 24 hours")
     @APIResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayScheduleDTO[].class)))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
-    public Response getExpiredBirthdays() {
+    public Response getExpiredSchedules() {
         return Response
                 .ok(birthdayScheduleService.getExpiredSchedules())
                 .build();
     }
 
     @PATCH
-    @Path("/advance/{scheduleGuildId}/{scheduleUserId}")
+    @Path("/advance/{guildId}/{userId}")
     @Blocking
     @RunOnVirtualThread
-    @Operation(operationId = "advance", summary = "Update schedule for next year")
+    @Operation(operationId = "advance", summary = "Update birthday schedule for next year")
     @APIResponse(responseCode = "204", description = "Success")
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "404", description = "Schedule not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
-    public Response advanceSchedule(@Parameter(required = true) @PathParam("scheduleGuildId") @Positive long scheduleGuildId, @Parameter(required = true) @PathParam("scheduleUserId") @Positive long scheduleUserId) {
-        birthdayScheduleService.advanceSchedule(scheduleGuildId, scheduleUserId);
+    public Response advanceSchedule(@Parameter(required = true) @PathParam("guildId") @Positive long guildId, @Parameter(required = true) @PathParam("userId") @Positive long userId) {
+        birthdayScheduleService.advanceSchedule(guildId, userId);
         return Response.noContent().build();
     }
 }

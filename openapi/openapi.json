@@ -246,7 +246,7 @@
     },
     "/api/v1/birthday/schedule/active" : {
       "get" : {
-        "summary" : "Get a list of schedules overdue by at most 24 hours",
+        "summary" : "Get a list of birthday schedules overdue by at most 24 hours",
         "operationId" : "getActiveSchedules",
         "tags" : [ "Birthday Schedule" ],
         "responses" : {
@@ -276,14 +276,14 @@
         }
       }
     },
-    "/api/v1/birthday/schedule/advance/{scheduleGuildId}/{scheduleUserId}" : {
+    "/api/v1/birthday/schedule/advance/{guildId}/{userId}" : {
       "patch" : {
-        "summary" : "Update schedule for next year",
+        "summary" : "Update birthday schedule for next year",
         "operationId" : "advance",
         "tags" : [ "Birthday Schedule" ],
         "parameters" : [ {
           "required" : true,
-          "name" : "scheduleGuildId",
+          "name" : "guildId",
           "in" : "path",
           "schema" : {
             "type" : "integer",
@@ -292,7 +292,7 @@
           }
         }, {
           "required" : true,
-          "name" : "scheduleUserId",
+          "name" : "userId",
           "in" : "path",
           "schema" : {
             "type" : "integer",
@@ -339,7 +339,7 @@
     },
     "/api/v1/birthday/schedule/expired" : {
       "get" : {
-        "summary" : "Get a list of schedules overdue by more than 24 hours",
+        "summary" : "Get a list of birthday schedules overdue by more than 24 hours",
         "operationId" : "getExpiredSchedules",
         "tags" : [ "Birthday Schedule" ],
         "responses" : {
@@ -371,7 +371,7 @@
     },
     "/api/v1/birthday/schedule/upcoming" : {
       "get" : {
-        "summary" : "Get a list of schedules due in the future",
+        "summary" : "Get a list of birthday schedules due in the future",
         "operationId" : "getUpcomingSchedules",
         "tags" : [ "Birthday Schedule" ],
         "responses" : {
@@ -384,6 +384,54 @@
                   "items" : {
                     "$ref" : "#/components/schemas/BirthdayScheduleDTO"
                   }
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/birthday/schedule/{guildId}/{userId}" : {
+      "get" : {
+        "summary" : "Get birthday schedule for a particular guild and user",
+        "operationId" : "getSchedule",
+        "tags" : [ "Birthday Schedule" ],
+        "parameters" : [ {
+          "required" : true,
+          "name" : "guildId",
+          "in" : "path",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64",
+            "exclusiveMinimum" : 0
+          }
+        }, {
+          "required" : true,
+          "name" : "userId",
+          "in" : "path",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64",
+            "exclusiveMinimum" : 0
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BirthdayScheduleDTO"
                 }
               }
             }
