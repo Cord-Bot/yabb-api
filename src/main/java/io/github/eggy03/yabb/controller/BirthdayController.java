@@ -1,7 +1,6 @@
 package io.github.eggy03.yabb.controller;
 
-import io.github.eggy03.yabb.dto.BirthdayRequestDTO;
-import io.github.eggy03.yabb.dto.BirthdayResponseDTO;
+import io.github.eggy03.yabb.dto.BirthdayDTO;
 import io.github.eggy03.yabb.exception.entity.ErrorResponse;
 import io.github.eggy03.yabb.service.BirthdayService;
 import io.smallrye.common.annotation.Blocking;
@@ -43,12 +42,12 @@ public class BirthdayController {
     @Blocking
     @RunOnVirtualThread
     @Operation(operationId = "saveBirthday", summary = "Save a Birthday")
-    @RequestBody(content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayRequestDTO.class)))
+    @RequestBody(content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayDTO.class)))
     @APIResponse(responseCode = "201", description = "Success")
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "409", description = "Constraint Violation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
-    public Response saveBirthday(@Valid BirthdayRequestDTO dto) {
+    public Response saveBirthday(@Valid BirthdayDTO dto) {
         birthdayService.saveBirthday(dto);
         return Response.status(Response.Status.CREATED).build();
     }
@@ -58,9 +57,9 @@ public class BirthdayController {
     @Blocking
     @RunOnVirtualThread
     @Operation(operationId = "getBirthday", summary = "Get Birthday for a User in a Guild")
-    @APIResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayResponseDTO.class)))
+    @APIResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayDTO.class)))
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
-    @APIResponse(responseCode = "404", description = "Birthday not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
+    @APIResponse(responseCode = "404", description = "Birthday or BirthdaySchedule not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     public Response getBirthday(@Parameter(required = true) @PathParam("guildId") @Positive long guildId, @Parameter(required = true) @PathParam("userId") @Positive long userId) {
         return Response
@@ -73,7 +72,7 @@ public class BirthdayController {
     @Blocking
     @RunOnVirtualThread
     @Operation(operationId = "getBirthdays", summary = "Get Birthdays for a Guild")
-    @APIResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayResponseDTO[].class)))
+    @APIResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayDTO[].class)))
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     public Response getBirthdays(@Parameter(required = true) @PathParam("guildId") @Positive long guildId) {
@@ -82,71 +81,17 @@ public class BirthdayController {
                 .build();
     }
 
-    @GET
-    @Path("/upcoming")
-    @Blocking
-    @RunOnVirtualThread
-    @Operation(operationId = "getUpcomingBirthdays", summary = "Get a list of birthdays due in the future")
-    @APIResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayResponseDTO[].class)))
-    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
-    public Response getUpcomingBirthdays() {
-        return Response
-                .ok(birthdayService.getUpcomingBirthdays())
-                .build();
-    }
-
-    @GET
-    @Path("/active")
-    @Blocking
-    @RunOnVirtualThread
-    @Operation(operationId = "getActiveBirthdays", summary = "Get a list of birthdays overdue by at most 24 hours")
-    @APIResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayResponseDTO[].class)))
-    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
-    public Response getActiveBirthdays() {
-        return Response
-                .ok(birthdayService.getActiveBirthdays())
-                .build();
-    }
-
-    @GET
-    @Path("/expired")
-    @Blocking
-    @RunOnVirtualThread
-    @Operation(operationId = "getExpiredBirthdays", summary = "Get a list of birthdays overdue by more than 24 hours")
-    @APIResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayResponseDTO[].class)))
-    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
-    public Response getExpiredBirthdays() {
-        return Response
-                .ok(birthdayService.getExpiredBirthdays())
-                .build();
-    }
-
     @PATCH
     @Blocking
     @RunOnVirtualThread
     @Operation(operationId = "updateBirthday", summary = "Update a Birthday")
-    @RequestBody(content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayRequestDTO.class)))
+    @RequestBody(content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayDTO.class)))
     @APIResponse(responseCode = "204", description = "Success")
     @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
-    @APIResponse(responseCode = "404", description = "Birthday not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
+    @APIResponse(responseCode = "404", description = "Birthday or BirthdaySchedule not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
-    public Response updateBirthday(@Valid BirthdayRequestDTO updatedDTO) {
+    public Response updateBirthday(@Valid BirthdayDTO updatedDTO) {
         birthdayService.updateBirthday(updatedDTO);
-        return Response.noContent().build();
-    }
-
-    @PATCH
-    @Path("/update-for-next-year")
-    @Blocking
-    @RunOnVirtualThread
-    @Operation(operationId = "updateBirthdayForNextYear", summary = "Update Birthday for Next Year")
-    @RequestBody(content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BirthdayRequestDTO.class)))
-    @APIResponse(responseCode = "204", description = "Success")
-    @APIResponse(responseCode = "400", description = "Validation Errors", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
-    @APIResponse(responseCode = "404", description = "Birthday not found", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
-    @APIResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class)))
-    public Response updateBirthdayForNextYear(@Valid BirthdayRequestDTO dto) {
-        birthdayService.updateBirthdayForNextYear(dto);
         return Response.noContent().build();
     }
 
