@@ -10,7 +10,7 @@ import java.time.Year;
 import java.time.ZoneId;
 
 @UtilityClass
-public class BirthdayUtils {
+public class BirthdayScheduleUtils {
 
     /**
      * Calculates the next instant for a given birth month and day.
