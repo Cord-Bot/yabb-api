@@ -11,14 +11,27 @@ create table yabb.guild_table
 
 create table yabb.birthday_table
 (
-    guild_id         bigint                   not null,
-    user_id          bigint                   not null,
-    birth_month      int                      not null check (birth_month between 1 and 12),
-    birth_day        int                      not null check (birth_day between 1 and 31),
-    zone_id          text                     not null,
-    upcoming_birthday timestamp with time zone not null,
+    guild_id    bigint not null,
+    user_id     bigint not null,
+    birth_month int    not null check (birth_month between 1 and 12),
+    birth_day   int    not null check (birth_day between 1 and 31),
+    zone_id     text   not null,
 
     constraint birthday_table_pk primary key (guild_id, user_id)
 );
 
-create index idx_upcoming_birthday on yabb.birthday_table (upcoming_birthday);
+create table yabb.birthday_schedule_table
+(
+    guild_id             bigint                   not null,
+    user_id              bigint                   not null,
+    upcoming_birthday_at timestamp with time zone not null,
+
+    primary key (guild_id, user_id),
+
+    foreign key (guild_id, user_id)
+        references yabb.birthday_table (guild_id, user_id)
+        on delete cascade
+);
+
+create index idx_upcoming_birthday_at
+    on yabb.birthday_schedule_table (upcoming_birthday_at);

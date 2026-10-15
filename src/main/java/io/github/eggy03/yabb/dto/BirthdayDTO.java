@@ -14,27 +14,27 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @AllArgsConstructor
 @ValidBirthMonthDay
 @ValidTimeZone
-public class BirthdayRequestDTO {
+public class BirthdayDTO {
 
     @NotNull(message = "GuildID cannot be null")
     @Positive(message = "GuildID must be positive")
-    @Schema(required = true, examples = "123456789012345678")
+    @Schema(required = true, description = "The guild ID of the birthday person", examples = "123456789012345678")
     private Long guildId;
 
     @NotNull(message = "UserID cannot be null")
     @Positive(message = "UserID must be positive")
-    @Schema(required = true, examples = "987654321098765432")
+    @Schema(required = true, description = "The user ID of the birthday person", examples = "987654321098765432")
     private Long userId;
 
     @NotNull(message = "Birth Month cannot be null")
-    @Schema(required = true, examples = "8")
+    @Schema(required = true, description = "The birth month", examples = "8")
     private Integer month;
 
     @NotNull(message = "Birth Day cannot be null")
-    @Schema(required = true, examples = "29")
+    @Schema(required = true, description = "The birth day", examples = "29")
     private Integer day;
 
     @NotNull(message = "IANA Zone ID cannot be null")
-    @Schema(required = true, examples = "Asia/Kolkata")
+    @Schema(required = true, description = "The GMT/UTC/UT or Region based Zone ID pf the birthday person", examples = {"Asia/Kolkata", "GMT+0530", "UTC+0530", "UT+0530"})
     private String zoneId;
 }

@@ -11,8 +11,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.time.Instant;
-
 @Entity
 @Getter
 @Setter
@@ -39,8 +37,4 @@ public class Birthday {
 
     @Column(name = "zone_id", nullable = false)
     private String zoneId;
-
-    // must always be calculated internally
-    @Column(name = "upcoming_birthday", nullable = false)
-    private Instant upcomingBirthday;
 }
