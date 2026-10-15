@@ -2,75 +2,64 @@
   "openapi" : "3.1.0",
   "components" : {
     "schemas" : {
-      "BirthdayRequestDTO" : {
+      "BirthdayDTO" : {
         "type" : "object",
         "required" : [ "guildId", "userId", "month", "day", "zoneId" ],
         "properties" : {
           "guildId" : {
             "type" : "integer",
             "format" : "int64",
+            "description" : "The guild ID of the birthday person",
             "examples" : [ 123456789012345678 ],
             "exclusiveMinimum" : 0
           },
           "userId" : {
             "type" : "integer",
             "format" : "int64",
+            "description" : "The user ID of the birthday person",
             "examples" : [ 987654321098765432 ],
             "exclusiveMinimum" : 0
           },
           "month" : {
             "type" : "integer",
             "format" : "int32",
+            "description" : "The birth month",
             "examples" : [ 8 ]
           },
           "day" : {
             "type" : "integer",
             "format" : "int32",
+            "description" : "The birth day",
             "examples" : [ 29 ]
           },
           "zoneId" : {
             "type" : "string",
-            "examples" : [ "Asia/Kolkata" ]
+            "description" : "The GMT/UTC/UT or Region based Zone ID pf the birthday person",
+            "examples" : [ "Asia/Kolkata", "GMT+0530", "UTC+0530", "UT+0530" ]
           }
         }
       },
-      "BirthdayResponseDTO" : {
+      "BirthdayScheduleDTO" : {
         "type" : "object",
-        "required" : [ "guildId", "userId", "month", "day", "zoneId", "upcomingBirthday" ],
+        "required" : [ "guildId", "userId", "upcomingBirthdayAt" ],
         "properties" : {
           "guildId" : {
             "type" : "integer",
             "format" : "int64",
-            "readOnly" : true,
-            "examples" : [ 123456789012345678 ]
+            "description" : "The guild ID of the birthday person",
+            "examples" : [ 123456789012345678 ],
+            "exclusiveMinimum" : 0
           },
           "userId" : {
             "type" : "integer",
             "format" : "int64",
-            "readOnly" : true,
-            "examples" : [ 987654321098765432 ]
+            "description" : "The user ID of the birthday person",
+            "examples" : [ 987654321098765432 ],
+            "exclusiveMinimum" : 0
           },
-          "month" : {
-            "type" : "integer",
-            "format" : "int32",
-            "readOnly" : true,
-            "examples" : [ 8 ]
-          },
-          "day" : {
-            "type" : "integer",
-            "format" : "int32",
-            "readOnly" : true,
-            "examples" : [ 29 ]
-          },
-          "zoneId" : {
-            "type" : "string",
-            "description" : "IANA time zone ID",
-            "readOnly" : true,
-            "examples" : [ "Asia/Kolkata" ]
-          },
-          "upcomingBirthday" : {
+          "upcomingBirthdayAt" : {
             "$ref" : "#/components/schemas/Instant",
-            "description" : "Upcoming birth date and time",
+            "description" : "Upcoming birth date and time of the birthday person",
             "type" : "string",
             "examples" : [ "2027-08-28T18:30:00Z" ]
           }
@@ -148,6 +137,8 @@
   "tags" : [ {
     "name" : "Birthday"
   }, {
+    "name" : "Birthday Schedule"
+  }, {
     "name" : "Guild"
   } ],
   "paths" : {
@@ -160,7 +151,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/BirthdayRequestDTO"
+                "$ref" : "#/components/schemas/BirthdayDTO"
               }
             }
           },
@@ -181,7 +172,7 @@
             }
           },
           "404" : {
-            "description" : "Birthday not found",
+            "description" : "Birthday or BirthdaySchedule not found",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -210,7 +201,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/BirthdayRequestDTO"
+                "$ref" : "#/components/schemas/BirthdayDTO"
               }
             }
           },
@@ -253,11 +244,11 @@
         }
       }
     },
-    "/api/v1/birthday/active" : {
+    "/api/v1/birthday/schedule/active" : {
       "get" : {
-        "summary" : "Get a list of birthdays overdue by at most 24 hours",
-        "operationId" : "getActiveBirthdays",
-        "tags" : [ "Birthday" ],
+        "summary" : "Get a list of schedules overdue by at most 24 hours",
+        "operationId" : "getActiveSchedules",
+        "tags" : [ "Birthday Schedule" ],
         "responses" : {
           "200" : {
             "description" : "Success",
@@ -266,7 +257,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/BirthdayResponseDTO"
+                    "$ref" : "#/components/schemas/BirthdayScheduleDTO"
                   }
                 }
               }
@@ -285,80 +276,16 @@
         }
       }
     },
-    "/api/v1/birthday/expired" : {
-      "get" : {
-        "summary" : "Get a list of birthdays overdue by more than 24 hours",
-        "operationId" : "getExpiredBirthdays",
-        "tags" : [ "Birthday" ],
-        "responses" : {
-          "200" : {
-            "description" : "Success",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/BirthdayResponseDTO"
-                  }
-                }
-              }
-            }
-          },
-          "500" : {
-            "description" : "Internal Server Error",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/birthday/upcoming" : {
-      "get" : {
-        "summary" : "Get a list of birthdays due in the future",
-        "operationId" : "getUpcomingBirthdays",
-        "tags" : [ "Birthday" ],
-        "responses" : {
-          "200" : {
-            "description" : "Success",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/BirthdayResponseDTO"
-                  }
-                }
-              }
-            }
-          },
-          "500" : {
-            "description" : "Internal Server Error",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/birthday/update-for-next-year" : {
+    "/api/v1/birthday/schedule/advance" : {
       "patch" : {
-        "summary" : "Update Birthday for Next Year",
-        "operationId" : "updateBirthdayForNextYear",
-        "tags" : [ "Birthday" ],
+        "summary" : "Update schedule for next year",
+        "operationId" : "advance",
+        "tags" : [ "Birthday Schedule" ],
         "requestBody" : {
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/BirthdayRequestDTO"
+                "$ref" : "#/components/schemas/BirthdayDTO"
               }
             }
           },
@@ -379,11 +306,75 @@
             }
           },
           "404" : {
-            "description" : "Birthday not found",
+            "description" : "Schedule not found",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/birthday/schedule/expired" : {
+      "get" : {
+        "summary" : "Get a list of schedules overdue by more than 24 hours",
+        "operationId" : "getExpiredSchedules",
+        "tags" : [ "Birthday Schedule" ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/BirthdayScheduleDTO"
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/birthday/schedule/upcoming" : {
+      "get" : {
+        "summary" : "Get a list of schedules due in the future",
+        "operationId" : "getUpcomingSchedules",
+        "tags" : [ "Birthday Schedule" ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/BirthdayScheduleDTO"
+                  }
                 }
               }
             }
@@ -424,7 +415,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/BirthdayResponseDTO"
+                    "$ref" : "#/components/schemas/BirthdayDTO"
                   }
                 }
               }
@@ -526,7 +517,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/BirthdayResponseDTO"
+                  "$ref" : "#/components/schemas/BirthdayDTO"
                 }
               }
             }
@@ -542,7 +533,7 @@
             }
           },
           "404" : {
-            "description" : "Birthday not found",
+            "description" : "Birthday or BirthdaySchedule not found",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -867,6 +858,6 @@
   },
   "info" : {
     "title" : "yabb-api API",
-    "version" : "0.0.1"
+    "version" : "1.0.0-SNAPSHOT"
   }
 }
