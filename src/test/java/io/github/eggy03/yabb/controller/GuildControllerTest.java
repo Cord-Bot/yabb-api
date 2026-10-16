@@ -171,7 +171,7 @@ class GuildControllerTest {
     }
 
     @Test
-    void viewGuild_success() {
+    void getGuild_success() {
         // save a guild once
         postGuild(validDTO()).statusCode(201);
 
@@ -187,12 +187,12 @@ class GuildControllerTest {
     }
 
     @Test
-    void viewGuild_notRegistered_notFound() {
+    void getGuild_notRegistered_notFound() {
         getGuild(validDTO().getGuildId()).statusCode(404);
     }
 
     @Test
-    void viewGuild_invalidParameters_badRequest() {
+    void getGuild_invalidParameters_badRequest() {
         getGuild(-GUILD_ID).statusCode(400);
     }
 
@@ -229,7 +229,7 @@ class GuildControllerTest {
         // save a valid guild once
         postGuild(validDTO()).statusCode(201);
 
-        // try updating that guild (we note that validDTO.guildId = negative/nullDTO.guildId)
+        // try updating that guild (we note that validDTOOne.guildId = negative/nullDTO.guildId)
         // pls check at the top if this is true or else most of the tests will probably fail or have false positives
         patchGuild(dto).statusCode(400);
 
