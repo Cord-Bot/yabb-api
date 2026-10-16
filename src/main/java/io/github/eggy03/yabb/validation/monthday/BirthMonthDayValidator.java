@@ -13,7 +13,7 @@ public class BirthMonthDayValidator implements ConstraintValidator<ValidBirthMon
     @Override
     @SuppressWarnings("java:S2201")
     public boolean isValid(BirthdayDTO dto, ConstraintValidatorContext context) {
-        if (dto == null || dto.getDay() == null || dto.getMonth() == null)
+        if (dto == null || dto.getDay() == null || dto.getMonth() == null || dto.getZoneId() == null)
             return true; // let inbuilt @NotNull placed in the DTO handle null validations
 
         try {
