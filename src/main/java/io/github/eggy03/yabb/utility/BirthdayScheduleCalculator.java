@@ -105,6 +105,7 @@ public class BirthdayScheduleCalculator {
 
         LocalDate thisYearBirthDate = currentYear.atMonthDay(birthMonthDay);
         LocalDate nextYearBirthDate = currentYear.plusYears(1).atMonthDay(birthMonthDay);
+        // always add the year first and then resolve monthDay or else 29 Feb birthdays in leap years won't be preserved
 
         return today.isAfter(thisYearBirthDate)
                 ? nextYearBirthDate.atStartOfDay(zoneId).toInstant()
