@@ -20,7 +20,7 @@ public class FixedClockProducer {
     @UTCClock // during tests, the frozen clock bean will replace our custom clock
     public Clock clock() {
         return Clock.fixed(
-                Instant.parse("2002-06-07T12:00:00Z"),
+                Instant.parse("2002-06-07T00:00:00Z"),
                 ZoneOffset.UTC
         );
     }

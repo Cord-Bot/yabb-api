@@ -53,7 +53,7 @@ class BirthdayScheduleControllerTest {
     // must be the same as the value provided by FixedClockProducer
     // since this is a static field, we cannot use the value from our FixedClockProducer bean
     // so we use this instead
-    private static final Instant NOW = Instant.parse("2002-06-07T12:00:00Z");
+    private static final Instant NOW = Instant.parse("2002-06-07T00:00:00Z");
 
     private static final Instant UPCOMING_INSTANT = NOW.plusSeconds(1);
     private static final Instant ACTIVE_INSTANT = NOW;
