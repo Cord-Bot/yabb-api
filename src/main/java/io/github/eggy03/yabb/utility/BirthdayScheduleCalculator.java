@@ -1,8 +1,8 @@
 package io.github.eggy03.yabb.utility;
 
+import io.github.eggy03.yabb.annotation.UTCClock;
 import jakarta.enterprise.context.ApplicationScoped;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -12,11 +12,14 @@ import java.time.Year;
 import java.time.ZoneId;
 
 @ApplicationScoped
-@RequiredArgsConstructor
 public class BirthdayScheduleCalculator {
 
     // clock produced by our custom bean
     private final @NonNull Clock clock;
+
+    public BirthdayScheduleCalculator(@NonNull @UTCClock Clock clock) {
+        this.clock = clock;
+    }
 
     /**
      * Calculates the next instant for a given birth month and day.

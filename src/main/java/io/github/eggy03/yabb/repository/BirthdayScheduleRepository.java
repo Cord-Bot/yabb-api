@@ -1,11 +1,11 @@
 package io.github.eggy03.yabb.repository;
 
+import io.github.eggy03.yabb.annotation.UTCClock;
 import io.github.eggy03.yabb.entity.BirthdayId;
 import io.github.eggy03.yabb.entity.BirthdaySchedule;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -14,11 +14,14 @@ import java.util.List;
 import java.util.Map;
 
 @ApplicationScoped
-@RequiredArgsConstructor
 public class BirthdayScheduleRepository implements PanacheRepositoryBase<BirthdaySchedule, BirthdayId> {
 
     // clock produced by our custom bean
     private final @NonNull Clock clock;
+
+    public BirthdayScheduleRepository(@NonNull @UTCClock Clock clock) {
+        this.clock = clock;
+    }
 
     public List<BirthdaySchedule> findUpcomingSchedules() {
         return find("upcomingBirthdayAt > :now", Map.of("now", clock.instant())).list();

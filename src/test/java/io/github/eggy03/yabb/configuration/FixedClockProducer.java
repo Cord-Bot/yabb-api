@@ -1,5 +1,6 @@
 package io.github.eggy03.yabb.configuration;
 
+import io.github.eggy03.yabb.annotation.UTCClock;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Alternative;
@@ -16,6 +17,7 @@ public class FixedClockProducer {
     @Alternative
     @Priority(1)
     @ApplicationScoped
+    @UTCClock // during tests, the frozen clock bean will replace our custom clock
     public Clock clock() {
         return Clock.fixed(
                 Instant.parse("2002-06-07T12:00:00Z"),
