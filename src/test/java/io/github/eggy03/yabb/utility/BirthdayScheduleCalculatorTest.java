@@ -1,290 +1,169 @@
 package io.github.eggy03.yabb.utility;
 
-import org.junit.jupiter.api.Test;
+import lombok.NonNull;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.Month;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Refer to {@code src/test/docs/TEST_CASES_FOR_BIRTHDAY_CALCULATION.md}
+ */
 class BirthdayScheduleCalculatorTest {
 
-    private BirthdayScheduleCalculator calculator;
+    record TestBirthdayRecord(
+            Instant today,
+            int birthDay,
+            int birthMonth,
+            String zoneId,
+            Instant expectedBirthday
+    ) {}
 
-    // freeze the time cause this method depends on the clock
-    @Test
-    void calculateUpcomingBirthday_whenBirthdayIsToday() {
-        Instant today = LocalDateTime
-                .of(2001, Month.JULY, 6, 0, 0, 0)
-                .atZone(ZoneId.of("Asia/Kolkata"))
-                .toInstant();
+    record TestBirthdayRecordForYear(
+            int birthDay,
+            int birthMonth,
+            int forYear,
+            String zoneId,
+            Instant expectedBirthday
+    ) {}
 
-        calculator = new BirthdayScheduleCalculator(Clock.fixed(today, ZoneOffset.UTC));
+    static @NonNull Stream<TestBirthdayRecord> testBirthdayRecordStream() {
+        ZoneId kolkata = ZoneId.of("Asia/Kolkata");
 
-        Instant upcomingBirthday = calculator.calculateUpcomingBirthday(6, 7, "Asia/Kolkata");
+        return Stream.of(
+                // Ordinary birthdays
+                new TestBirthdayRecord(
+                        LocalDate.of(2026, 10, 17).atStartOfDay(kolkata).toInstant(),
+                        16, 10, kolkata.getId(),
+                        LocalDate.of(2027, 10, 16).atStartOfDay(kolkata).toInstant()
+                ),
+                new TestBirthdayRecord(
+                        LocalDate.of(2026, 10, 17).atStartOfDay(kolkata).toInstant(),
+                        17, 10, kolkata.getId(),
+                        LocalDate.of(2026, 10, 17).atStartOfDay(kolkata).toInstant()
+                ),
+                new TestBirthdayRecord(
+                        LocalDate.of(2026, 10, 17).atStartOfDay(kolkata).toInstant(),
+                        18, 10, kolkata.getId(),
+                        LocalDate.of(2026, 10, 18).atStartOfDay(kolkata).toInstant()
+                ),
 
-        assertThat(upcomingBirthday).isEqualTo(today);
+                // Year boundaries
+                new TestBirthdayRecord(
+                        LocalDate.of(2026, 1, 1).atStartOfDay(kolkata).toInstant(),
+                        31, 12, kolkata.getId(),
+                        LocalDate.of(2026, 12, 31).atStartOfDay(kolkata).toInstant()
+                ),
+                new TestBirthdayRecord(
+                        LocalDate.of(2026, 12, 31).atStartOfDay(kolkata).toInstant(),
+                        1, 1, kolkata.getId(),
+                        LocalDate.of(2027, 1, 1).atStartOfDay(kolkata).toInstant()
+                ),
+
+                // February 29 birthdays
+                new TestBirthdayRecord(
+                        LocalDate.of(2026, 2, 28).atStartOfDay(kolkata).toInstant(),
+                        29, 2, kolkata.getId(),
+                        LocalDate.of(2026, 2, 28).atStartOfDay(kolkata).toInstant()
+                ),
+                new TestBirthdayRecord(
+                        LocalDate.of(2026, 3, 1).atStartOfDay(kolkata).toInstant(),
+                        29, 2, kolkata.getId(),
+                        LocalDate.of(2027, 2, 28).atStartOfDay(kolkata).toInstant()
+                ),
+                new TestBirthdayRecord(
+                        LocalDate.of(2027, 2, 28).atStartOfDay(kolkata).toInstant(),
+                        29, 2, kolkata.getId(),
+                        LocalDate.of(2027, 2, 28).atStartOfDay(kolkata).toInstant()
+                ),
+                new TestBirthdayRecord(
+                        LocalDate.of(2027, 3, 1).atStartOfDay(kolkata).toInstant(),
+                        29, 2, kolkata.getId(),
+                        LocalDate.of(2028, 2, 29).atStartOfDay(kolkata).toInstant()
+                ),
+                new TestBirthdayRecord(
+                        LocalDate.of(2028, 2, 28).atStartOfDay(kolkata).toInstant(),
+                        29, 2, kolkata.getId(),
+                        LocalDate.of(2028, 2, 29).atStartOfDay(kolkata).toInstant()
+                ),
+                new TestBirthdayRecord(
+                        LocalDate.of(2028, 2, 29).atStartOfDay(kolkata).toInstant(),
+                        29, 2, kolkata.getId(),
+                        LocalDate.of(2028, 2, 29).atStartOfDay(kolkata).toInstant()
+                ),
+                new TestBirthdayRecord(
+                        LocalDate.of(2028, 2, 29).atStartOfDay(kolkata).toInstant(),
+                        28, 2, kolkata.getId(),
+                        LocalDate.of(2029, 2, 28).atStartOfDay(kolkata).toInstant()
+                ),
+                new TestBirthdayRecord(
+                        LocalDate.of(2028, 3, 1).atStartOfDay(kolkata).toInstant(),
+                        29, 2, kolkata.getId(),
+                        LocalDate.of(2029, 2, 28).atStartOfDay(kolkata).toInstant()
+                )
+        );
     }
 
-    @Test
-    void calculateUpcomingBirthday_whenBirthdayIsTomorrow() {
-        Instant today = LocalDateTime
-                .of(2001, Month.JULY, 6, 0, 0, 0)
-                .atZone(ZoneId.of("Asia/Kolkata"))
-                .toInstant();
+    static @NonNull Stream<TestBirthdayRecordForYear> testBirthdayRecordStreamForForYear() {
+        ZoneId kolkata = ZoneId.of("Asia/Kolkata");
 
-        calculator = new BirthdayScheduleCalculator(Clock.fixed(today, ZoneOffset.UTC));
-
-        Instant upcomingBirthday = calculator.calculateUpcomingBirthday(7, 7, "Asia/Kolkata");
-
-        Instant expected = LocalDateTime
-                .of(2001, Month.JULY, 7, 0, 0, 0)
-                .atZone(ZoneId.of("Asia/Kolkata"))
-                .toInstant();
-
-        assertThat(upcomingBirthday).isEqualTo(expected);
+        return Stream.of(
+                // non leap birthday, non leap year
+                new TestBirthdayRecordForYear(
+                        17, 10, 2001, kolkata.getId(),
+                        LocalDate.of(2001, 10, 17).atStartOfDay(kolkata).toInstant()
+                ),
+                // non leap birthday, leap year
+                new TestBirthdayRecordForYear(
+                        17, 10, 2000, kolkata.getId(),
+                        LocalDate.of(2000, 10, 17).atStartOfDay(kolkata).toInstant()
+                ),
+                // leap birthday, non leap year
+                new TestBirthdayRecordForYear(
+                        29, 2, 2001, kolkata.getId(),
+                        LocalDate.of(2001, 2, 28).atStartOfDay(kolkata).toInstant()
+                ),
+                // leap birthday, leap year
+                new TestBirthdayRecordForYear(
+                        29, 2, 2000, kolkata.getId(),
+                        LocalDate.of(2000, 2, 29).atStartOfDay(kolkata).toInstant()
+                )
+        );
     }
 
-    @Test
-    void calculateUpcomingBirthday_whenBirthdayWasYesterday() {
-        Instant today = LocalDateTime
-                .of(2001, Month.JULY, 6, 0, 0, 0)
-                .atZone(ZoneId.of("Asia/Kolkata"))
-                .toInstant();
+    @ParameterizedTest
+    @MethodSource("testBirthdayRecordStream")
+    void testCalculateBirthdayForYear(@NonNull TestBirthdayRecord data) {
 
-        calculator = new BirthdayScheduleCalculator(Clock.fixed(today, ZoneOffset.UTC));
+        // fix a clock
+        Clock clock = Clock.fixed(data.today, ZoneOffset.UTC);
 
-        Instant upcomingBirthday = calculator.calculateUpcomingBirthday(5, 7, "Asia/Kolkata");
+        // prepare the calculator service
+        BirthdayScheduleCalculator calculator = new BirthdayScheduleCalculator(clock);
 
-        Instant expected = LocalDateTime
-                .of(2002, Month.JULY, 5, 0, 0, 0)
-                .atZone(ZoneId.of("Asia/Kolkata"))
-                .toInstant();
+        assertThat(data.expectedBirthday)
+                .isEqualTo(calculator.calculateUpcomingBirthday(data.birthDay, data.birthMonth, data.zoneId));
 
-        assertThat(upcomingBirthday).isEqualTo(expected);
     }
 
-    @Test
-    void calculateUpcomingBirthday_whenBirthdayIsLaterInTheYear() {
-        Instant today = LocalDateTime
-                .of(2001, Month.JANUARY, 1, 0, 0, 0)
-                .atZone(ZoneId.of("Asia/Kolkata"))
-                .toInstant();
 
-        calculator = new BirthdayScheduleCalculator(Clock.fixed(today, ZoneOffset.UTC));
+    @ParameterizedTest
+    @MethodSource("testBirthdayRecordStreamForForYear")
+    void testCalculateBirthdayForYear(@NonNull TestBirthdayRecordForYear data) {
 
-        Instant upcomingBirthday = calculator.calculateUpcomingBirthday(31, 12, "Asia/Kolkata");
+        // no need to have a fixed clock here
+        // cause calculateBirthdayForYear() doesn't depend on a clock
+        BirthdayScheduleCalculator calculator = new BirthdayScheduleCalculator(Clock.systemUTC());
 
-        Instant expected = LocalDateTime
-                .of(2001, Month.DECEMBER, 31, 0, 0, 0)
-                .atZone(ZoneId.of("Asia/Kolkata"))
-                .toInstant();
-
-        assertThat(upcomingBirthday).isEqualTo(expected);
-    }
-
-    @Test
-    void calculateUpcomingBirthday_whenBirthdayIsNextYear() {
-        Instant today = LocalDateTime
-                .of(2001, Month.DECEMBER, 31, 0, 0, 0)
-                .atZone(ZoneId.of("Asia/Kolkata"))
-                .toInstant();
-
-        calculator = new BirthdayScheduleCalculator(Clock.fixed(today, ZoneOffset.UTC));
-
-        Instant upcomingBirthday = calculator.calculateUpcomingBirthday(1, 1, "Asia/Kolkata");
-
-        Instant expected = LocalDateTime
-                .of(2002, Month.JANUARY, 1, 0, 0, 0)
-                .atZone(ZoneId.of("Asia/Kolkata"))
-                .toInstant();
-
-        assertThat(upcomingBirthday).isEqualTo(expected);
-    }
-
-    @Test
-    void calculateUpcomingBirthday_whenLeapDayBirthdayIsTodayInLeapYear() {
-        Instant today = LocalDateTime
-                .of(2000, Month.FEBRUARY, 29, 0, 0, 0)
-                .atZone(ZoneId.of("Asia/Kolkata"))
-                .toInstant();
-
-        calculator = new BirthdayScheduleCalculator(Clock.fixed(today, ZoneOffset.UTC));
-
-        Instant upcomingBirthday = calculator.calculateUpcomingBirthday(29, 2, "Asia/Kolkata");
-
-        assertThat(upcomingBirthday).isEqualTo(today);
-    }
-
-    @Test
-    void calculateUpcomingBirthday_whenLeapDayBirthdayIsTomorrow() {
-        Instant today = LocalDateTime
-                .of(2000, Month.FEBRUARY, 28, 0, 0, 0)
-                .atZone(ZoneId.of("Asia/Kolkata"))
-                .toInstant();
-
-        calculator = new BirthdayScheduleCalculator(Clock.fixed(today, ZoneOffset.UTC));
-
-        Instant upcomingBirthday = calculator.calculateUpcomingBirthday(29, 2, "Asia/Kolkata");
-
-        Instant expected = LocalDateTime
-                .of(2000, Month.FEBRUARY, 29, 0, 0, 0)
-                .atZone(ZoneId.of("Asia/Kolkata"))
-                .toInstant();
-
-        assertThat(upcomingBirthday).isEqualTo(expected);
-    }
-
-    @Test
-    void calculateUpcomingBirthday_whenLeapDayFallsOnFebruary28InNonLeapYear() {
-        Instant today = LocalDateTime
-                .of(2001, Month.FEBRUARY, 28, 0, 0, 0)
-                .atZone(ZoneId.of("Asia/Kolkata"))
-                .toInstant();
-
-        calculator = new BirthdayScheduleCalculator(Clock.fixed(today, ZoneOffset.UTC));
-
-        Instant upcomingBirthday = calculator.calculateUpcomingBirthday(29, 2, "Asia/Kolkata");
-
-        assertThat(upcomingBirthday).isEqualTo(today);
-    }
-
-    @Test
-    void calculateUpcomingBirthday_whenLeapDayBirthdayHasPassedInNonLeapYear() {
-        Instant today = LocalDateTime
-                .of(2001, Month.MARCH, 1, 0, 0, 0)
-                .atZone(ZoneId.of("Asia/Kolkata"))
-                .toInstant();
-
-        calculator = new BirthdayScheduleCalculator(Clock.fixed(today, ZoneOffset.UTC));
-
-        Instant upcomingBirthday = calculator.calculateUpcomingBirthday(29, 2, "Asia/Kolkata");
-
-        Instant expected = LocalDateTime
-                .of(2002, Month.FEBRUARY, 28, 0, 0, 0)
-                .atZone(ZoneId.of("Asia/Kolkata"))
-                .toInstant();
-
-        assertThat(upcomingBirthday).isEqualTo(expected);
-    }
-
-    @Test
-    void calculateUpcomingBirthday_whenNextYearIsLeapYear() {
-        Instant today = LocalDateTime
-                .of(1999, Month.MARCH, 1, 0, 0, 0)
-                .atZone(ZoneId.of("Asia/Kolkata"))
-                .toInstant();
-
-        calculator = new BirthdayScheduleCalculator(Clock.fixed(today, ZoneOffset.UTC));
-
-        Instant upcomingBirthday = calculator.calculateUpcomingBirthday(29, 2, "Asia/Kolkata");
-
-        Instant expected = LocalDateTime
-                .of(2000, Month.FEBRUARY, 29, 0, 0, 0)
-                .atZone(ZoneId.of("Asia/Kolkata"))
-                .toInstant();
-
-        assertThat(upcomingBirthday).isEqualTo(expected);
-    }
-
-    @Test
-    void calculateUpcomingBirthday_whenFebruary28BirthdayHasPassedOnLeapDay() {
-        Instant today = LocalDateTime
-                .of(2000, Month.FEBRUARY, 29, 0, 0, 0)
-                .atZone(ZoneId.of("Asia/Kolkata"))
-                .toInstant();
-
-        calculator = new BirthdayScheduleCalculator(Clock.fixed(today, ZoneOffset.UTC));
-
-        Instant upcomingBirthday = calculator.calculateUpcomingBirthday(28, 2, "Asia/Kolkata");
-
-        Instant expected = LocalDateTime
-                .of(2001, Month.FEBRUARY, 28, 0, 0, 0)
-                .atZone(ZoneId.of("Asia/Kolkata"))
-                .toInstant();
-
-        assertThat(upcomingBirthday).isEqualTo(expected);
-    }
-
-    @Test
-    void calculateUpcomingBirthday_whenFebruary28BirthdayIsTodayInLeapYear() {
-        Instant today = LocalDateTime
-                .of(2000, Month.FEBRUARY, 28, 0, 0, 0)
-                .atZone(ZoneId.of("Asia/Kolkata"))
-                .toInstant();
-
-        calculator = new BirthdayScheduleCalculator(Clock.fixed(today, ZoneOffset.UTC));
-
-        Instant upcomingBirthday = calculator.calculateUpcomingBirthday(28, 2, "Asia/Kolkata");
-
-        assertThat(upcomingBirthday).isEqualTo(today);
-    }
-
-    // calculateBirthdayForYear cases
-    // no need to have a fixed clock here
-    // cause birthdayForYear doesn't depend on a clock
-    @Test
-    void calculateBirthdayForYear_whenBirthdayIsNonLeap_andYearIsNonLeap() {
-
-        Instant expectedBirthday = LocalDateTime
-                .of(2001, Month.FEBRUARY, 28, 0, 0, 0)
-                .atZone(ZoneId.of("Asia/Kolkata"))
-                .toInstant();
-
-        calculator = new BirthdayScheduleCalculator(Clock.systemUTC());
-
-        Instant upcomingBirthday = calculator.calculateBirthdayForYear(28, 2, 2001, "Asia/Kolkata");
-
-        assertThat(upcomingBirthday).isEqualTo(expectedBirthday);
-    }
-
-    @Test
-    void calculateBirthdayForYear_whenBirthdayIsLeap_andYearIsLeap() {
-
-        Instant expectedBirthday = LocalDateTime
-                .of(2000, Month.FEBRUARY, 29, 0, 0, 0)
-                .atZone(ZoneId.of("Asia/Kolkata"))
-                .toInstant();
-
-        calculator = new BirthdayScheduleCalculator(Clock.systemUTC());
-
-        Instant upcomingBirthday = calculator.calculateBirthdayForYear(29, 2, 2000, "Asia/Kolkata");
-
-        assertThat(upcomingBirthday).isEqualTo(expectedBirthday);
-    }
-
-    @Test
-    void calculateBirthdayForYear_whenBirthdayIsLeap_andYearIsNonLeap() {
-
-        Instant expectedBirthday = LocalDateTime
-                .of(2001, Month.FEBRUARY, 28, 0, 0, 0)
-                .atZone(ZoneId.of("Asia/Kolkata"))
-                .toInstant();
-
-        calculator = new BirthdayScheduleCalculator(Clock.systemUTC());
-
-        Instant upcomingBirthday = calculator.calculateBirthdayForYear(29, 2, 2001, "Asia/Kolkata");
-
-        assertThat(upcomingBirthday).isEqualTo(expectedBirthday);
-    }
-
-    @Test
-    void calculateBirthdayForYear_whenBirthdayIsNonLeap_andYearIsLeap() {
-
-        Instant expectedBirthday = LocalDateTime
-                .of(2000, Month.FEBRUARY, 28, 0, 0, 0)
-                .atZone(ZoneId.of("Asia/Kolkata"))
-                .toInstant();
-
-        calculator = new BirthdayScheduleCalculator(Clock.systemUTC());
-
-        Instant upcomingBirthday = calculator.calculateBirthdayForYear(28, 2, 2000, "Asia/Kolkata");
-
-        assertThat(upcomingBirthday).isEqualTo(expectedBirthday);
+        assertThat(data.expectedBirthday)
+                .isEqualTo(calculator.calculateBirthdayForYear(data.birthDay, data.birthMonth, data.forYear, data.zoneId));
     }
 
 }
