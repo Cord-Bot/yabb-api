@@ -88,15 +88,18 @@ public class BirthdayScheduleUtils {
         MonthDay birthMonthDay = MonthDay.of(birthMonth, birthDay);
         ZoneId zoneId = ZoneId.of(zoneIdString);
 
-        Year currentYear = Year.now(zoneId);
+        // capture today only ONCE and derive currentYear from it
+        // if u use Year.now() while u have LocalDate.now()
+        // it may straddle at end of the year boundaries
+        LocalDate today = LocalDate.now(zoneId);
+        Year currentYear = Year.from(today);
 
         LocalDate thisYearBirthDate = currentYear.atMonthDay(birthMonthDay);
         LocalDate nextYearBirthDate = currentYear.plusYears(1).atMonthDay(birthMonthDay);
-        LocalDate today = LocalDate.now(zoneId);
 
-        return today.isAfter(thisYearBirthDate) ?
-                nextYearBirthDate.atStartOfDay(zoneId).toInstant() :
-                thisYearBirthDate.atStartOfDay(zoneId).toInstant();
+        return today.isAfter(thisYearBirthDate)
+                ? nextYearBirthDate.atStartOfDay(zoneId).toInstant()
+                : thisYearBirthDate.atStartOfDay(zoneId).toInstant();
     }
 
     /**
