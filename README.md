@@ -1,6 +1,6 @@
 # Yabb-API
 
-API Service required by YABB to store guild info and user birthdays.
+API Service required by YABB to store user birthdays.
 
 # Self-Host Guide
 

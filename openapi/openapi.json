@@ -65,6 +65,33 @@
           }
         }
       },
+      "ConfigDTO" : {
+        "type" : "object",
+        "required" : [ "guildId", "channelId" ],
+        "properties" : {
+          "guildId" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "Discord guild/server ID",
+            "examples" : [ 123456789012345678 ],
+            "exclusiveMinimum" : 0
+          },
+          "channelId" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "Discord channel ID where birthday notifications are sent",
+            "examples" : [ 987654321098765432 ],
+            "exclusiveMinimum" : 0
+          },
+          "roleId" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "Discord role ID to ping when birthday notifications are sent",
+            "examples" : [ 1234567891051454842 ],
+            "exclusiveMinimum" : 0
+          }
+        }
+      },
       "ErrorResponse" : {
         "description" : "Standard API error response",
         "type" : "object",
@@ -95,33 +122,6 @@
           }
         }
       },
-      "GuildDTO" : {
-        "type" : "object",
-        "required" : [ "guildId", "channelId" ],
-        "properties" : {
-          "guildId" : {
-            "type" : "integer",
-            "format" : "int64",
-            "description" : "Discord guild/server ID",
-            "examples" : [ 123456789012345678 ],
-            "exclusiveMinimum" : 0
-          },
-          "channelId" : {
-            "type" : "integer",
-            "format" : "int64",
-            "description" : "Discord channel ID where birthday notifications are sent",
-            "examples" : [ 987654321098765432 ],
-            "exclusiveMinimum" : 0
-          },
-          "roleId" : {
-            "type" : "integer",
-            "format" : "int64",
-            "description" : "Discord role ID to ping when birthday notifications are sent",
-            "examples" : [ 1234567891051454842 ],
-            "exclusiveMinimum" : 0
-          }
-        }
-      },
       "Instant" : {
         "type" : "string",
         "format" : "date-time",
@@ -139,7 +139,7 @@
   }, {
     "name" : "Birthday Schedule"
   }, {
-    "name" : "Guild"
+    "name" : "Config"
   } ],
   "paths" : {
     "/api/v1/birthday" : {
@@ -671,16 +671,16 @@
         }
       }
     },
-    "/api/v1/guild" : {
+    "/api/v1/config" : {
       "patch" : {
-        "summary" : "Update a Guild",
-        "operationId" : "updateGuild",
-        "tags" : [ "Guild" ],
+        "summary" : "Update a Config",
+        "operationId" : "updateConfig",
+        "tags" : [ "Config" ],
         "requestBody" : {
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/GuildDTO"
+                "$ref" : "#/components/schemas/ConfigDTO"
               }
             }
           },
@@ -701,7 +701,7 @@
             }
           },
           "404" : {
-            "description" : "Guild not found",
+            "description" : "Config not found",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -723,14 +723,14 @@
         }
       },
       "post" : {
-        "summary" : "Save a Guild",
-        "operationId" : "saveGuild",
-        "tags" : [ "Guild" ],
+        "summary" : "Save a Config",
+        "operationId" : "saveConfig",
+        "tags" : [ "Config" ],
         "requestBody" : {
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/GuildDTO"
+                "$ref" : "#/components/schemas/ConfigDTO"
               }
             }
           },
@@ -773,9 +773,9 @@
         }
       },
       "get" : {
-        "summary" : "Get All Guilds",
-        "operationId" : "getAllGuilds",
-        "tags" : [ "Guild" ],
+        "summary" : "Get All Configs",
+        "operationId" : "getAllConfigs",
+        "tags" : [ "Config" ],
         "responses" : {
           "200" : {
             "description" : "Success",
@@ -784,7 +784,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/GuildDTO"
+                    "$ref" : "#/components/schemas/ConfigDTO"
                   }
                 }
               }
@@ -803,11 +803,11 @@
         }
       }
     },
-    "/api/v1/guild/{guildId}" : {
+    "/api/v1/config/{guildId}" : {
       "get" : {
-        "summary" : "Get a Guild",
-        "operationId" : "getGuild",
-        "tags" : [ "Guild" ],
+        "summary" : "Get a saved Config",
+        "operationId" : "getConfig",
+        "tags" : [ "Config" ],
         "parameters" : [ {
           "required" : true,
           "name" : "guildId",
@@ -824,7 +824,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/GuildDTO"
+                  "$ref" : "#/components/schemas/ConfigDTO"
                 }
               }
             }
@@ -840,7 +840,7 @@
             }
           },
           "404" : {
-            "description" : "Guild not found",
+            "description" : "Config not found",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -862,9 +862,9 @@
         }
       },
       "delete" : {
-        "summary" : "Delete a Guild",
-        "operationId" : "deleteGuild",
-        "tags" : [ "Guild" ],
+        "summary" : "Delete a Config",
+        "operationId" : "deleteConfig",
+        "tags" : [ "Config" ],
         "parameters" : [ {
           "required" : true,
           "name" : "guildId",
@@ -890,7 +890,7 @@
             }
           },
           "404" : {
-            "description" : "Guild not found",
+            "description" : "Config not found",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -914,7 +914,7 @@
     }
   },
   "info" : {
-    "title" : "yabb-api API",
-    "version" : "1.0.0-SNAPSHOT"
+    "title" : "Yabb API",
+    "version" : "1.0.0"
   }
 }
