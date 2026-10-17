@@ -51,8 +51,7 @@ class BirthdayScheduleControllerTest {
     private static final long USER_ID_TWO = 444444444444444L;
 
     // must be the same as the value provided by FixedClockProducer
-    // since this is a static field, we cannot use the value from our FixedClockProducer bean
-    // so we use this instead
+    // or else upcoming, active and expired instant assertions will fail or be false positives/negatives
     private static final Instant NOW = Instant.parse("2002-06-07T00:00:00Z");
 
     private static final Instant UPCOMING_INSTANT = NOW.plusSeconds(1);
