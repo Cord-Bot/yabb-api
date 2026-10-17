@@ -6,7 +6,6 @@ import io.github.eggy03.yabb.entity.BirthdayId;
 import io.github.eggy03.yabb.entity.BirthdaySchedule;
 import io.github.eggy03.yabb.repository.BirthdayRepository;
 import io.github.eggy03.yabb.repository.BirthdayScheduleRepository;
-import io.github.eggy03.yabb.utility.BirthdayScheduleUtils;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
@@ -18,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -179,12 +179,32 @@ class BirthdayControllerTest {
                 .satisfies(schedule -> {
                     assertThat(schedule.getGuildId()).isEqualTo(dto.getGuildId());
                     assertThat(schedule.getUserId()).isEqualTo(dto.getUserId());
-                    assertThat(schedule.getUpcomingBirthdayAt()).isEqualTo(BirthdayScheduleUtils.calculateUpcomingBirthday(dto.getDay(), dto.getMonth(), dto.getZoneId()));
-                    // Note: The POST request and this validation may execute at different instants.
-                    // This is not currently an issue because calculateUpcomingBirthday() returns
-                    // the same upcoming birthday Instant across the year boundary.
-                    // TODO: Freeze time in tests to make the validation deterministic.
+                    assertThat(schedule.getUpcomingBirthdayAt()).isInstanceOf(Instant.class);
                 });
+
+        // Note: The HTTP request for saving/updating the birthday
+        // and this validation will execute at different instants.
+
+        // Both the HTTP request and this assertion use calculateUpcomingBirthday()
+        // at their respective instants to validate the entry in the schedule.
+
+        // Say someone's birthday is on July 6, and they set their birthday on July 6, 2026, at 23:59:59
+        // The HTTP request runs and determines July 6, 2026, to be the upcoming birthday value,
+        // since the birthday day hasn't passed yet.
+        // But say, this validation runs on July 7, 2026, at 00:00:03,
+        // This means the upcoming birthday for validation will be July 6, 2027.
+
+        // This is because the utility function LocalDate.now() to calculate the present year
+        // which drives its decision to set the upcoming birthday.
+        // So, theoretically there can be cases where the assertion will assert for two different
+        // upcoming birthday values at around midnight, which will cause the test to fail.
+
+        // Mocking the util method is not an option cause I don't know how Quarkus
+        // will handle HTTP requests. The two mocked instances of the utility
+        // may not even run on the same thread.
+
+        // TODO: Freeze time in tests to make the scheduled birthday assertion deterministic.
+        // until then, dont validate the scheduled time
 
     }
 
