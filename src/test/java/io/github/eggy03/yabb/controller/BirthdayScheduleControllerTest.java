@@ -1,5 +1,6 @@
 package io.github.eggy03.yabb.controller;
 
+import io.github.eggy03.yabb.configuration.FixedClockProducer;
 import io.github.eggy03.yabb.dto.BirthdayScheduleDTO;
 import io.github.eggy03.yabb.entity.Birthday;
 import io.github.eggy03.yabb.entity.BirthdayId;
@@ -50,13 +51,11 @@ class BirthdayScheduleControllerTest {
     private static final long GUILD_ID_TWO = 333333333333333L;
     private static final long USER_ID_TWO = 444444444444444L;
 
-    // must be the same as the value provided by FixedClockProducer
-    // or else upcoming, active and expired instant assertions will fail or be false positives/negatives
-    private static final Instant NOW = Instant.parse("2002-06-07T00:00:00Z");
-
-    private static final Instant UPCOMING_INSTANT = NOW.plusSeconds(1);
-    private static final Instant ACTIVE_INSTANT = NOW;
-    private static final Instant EXPIRED_INSTANT = NOW.minusSeconds(86_401);
+    // set these instants based on relative calculations with the fixed/frozen time used for the tests
+    // cause they will be compared against the fixed clock, implicitly by the methods in birthdayScheduleRepository
+    private static final Instant UPCOMING_INSTANT = FixedClockProducer.now().plusSeconds(1);
+    private static final Instant ACTIVE_INSTANT = FixedClockProducer.now();
+    private static final Instant EXPIRED_INSTANT = FixedClockProducer.now().minusSeconds(86_401);
 
     // Upcoming schedule (user 1 in guild 1)
     static @NonNull BirthdayScheduleDTO upcomingDTO() {
@@ -245,26 +244,27 @@ class BirthdayScheduleControllerTest {
         assertThat(response).containsExactly(expiredDTO());
     }
 
-    @Test
-    void advanceSchedule_success() {
+    @ParameterizedTest
+    @MethodSource("validDTOs")
+    void advanceSchedule_success(BirthdayScheduleDTO dto) {
         // persist schedule
-        persistSchedule(expiredDTO());
+        persistSchedule(dto);
 
         // verify persistence
-        assertScheduleExistsWith(expiredDTO());
+        assertScheduleExistsWith(dto);
 
         // call advance
-        patchSchedule(expiredDTO().getGuildId(), expiredDTO().getUserId())
+        patchSchedule(dto.getGuildId(), dto.getUserId())
                 .statusCode(204);
 
         // get the advanced schedule
-        BirthdayScheduleDTO response = getSchedule(expiredDTO().getGuildId(), expiredDTO().getUserId())
+        BirthdayScheduleDTO response = getSchedule(dto.getGuildId(), dto.getUserId())
                 .statusCode(200)
                 .extract()
                 .as(BirthdayScheduleDTO.class);
 
         // formulate the expected next year birthday
-        ZonedDateTime zonedDateTime = expiredDTO().getUpcomingBirthdayAt().atZone(ZoneId.of("Asia/Kolkata"));
+        ZonedDateTime zonedDateTime = dto.getUpcomingBirthdayAt().atZone(ZoneId.of("Asia/Kolkata"));
         int day = zonedDateTime.getDayOfMonth();
         int month = zonedDateTime.getMonthValue();
         int advancedYear = zonedDateTime.getYear() + 1;
