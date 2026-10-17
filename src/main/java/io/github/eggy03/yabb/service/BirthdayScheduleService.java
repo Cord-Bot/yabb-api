@@ -9,7 +9,7 @@ import io.github.eggy03.yabb.exception.BirthdayScheduleNotFoundException;
 import io.github.eggy03.yabb.mapper.BirthdayScheduleMapper;
 import io.github.eggy03.yabb.repository.BirthdayRepository;
 import io.github.eggy03.yabb.repository.BirthdayScheduleRepository;
-import io.github.eggy03.yabb.utility.BirthdayScheduleUtils;
+import io.github.eggy03.yabb.utility.BirthdayScheduleCalculator;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import lombok.NonNull;
@@ -22,6 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BirthdayScheduleService {
 
+    private final @NonNull BirthdayScheduleCalculator birthdayScheduleCalculator;
     private final @NonNull BirthdayScheduleMapper birthdayScheduleMapper;
     private final @NonNull BirthdayScheduleRepository birthdayScheduleRepository;
     private final @NonNull BirthdayRepository birthdayRepository;
@@ -83,7 +84,7 @@ public class BirthdayScheduleService {
                 // To Advance To: 2028
                 // If we run the util function on the latest year and then advance the year, it will change the date to 28 because 2027 is not a leap year
                 // and the final date would be 28 Feb 2028. But we could have had 29 on 2028 cause it's a leap year. This is info loss.
-                BirthdayScheduleUtils.calculateBirthdayForYear(day, month, nextYear, timeZone)
+                birthdayScheduleCalculator.calculateBirthdayForYear(day, month, nextYear, timeZone)
         );
     }
 }

@@ -9,7 +9,7 @@ import io.github.eggy03.yabb.exception.BirthdayScheduleNotFoundException;
 import io.github.eggy03.yabb.mapper.BirthdayMapper;
 import io.github.eggy03.yabb.repository.BirthdayRepository;
 import io.github.eggy03.yabb.repository.BirthdayScheduleRepository;
-import io.github.eggy03.yabb.utility.BirthdayScheduleUtils;
+import io.github.eggy03.yabb.utility.BirthdayScheduleCalculator;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import lombok.NonNull;
@@ -25,6 +25,7 @@ public class BirthdayService {
     private final @NonNull BirthdayMapper birthdayMapper;
     private final @NonNull BirthdayRepository birthdayRepository;
     private final @NonNull BirthdayScheduleRepository birthdayScheduleRepository;
+    private final @NonNull BirthdayScheduleCalculator birthdayScheduleCalculator;
 
     @Transactional
     public void saveBirthday(@NonNull BirthdayDTO dto) {
@@ -37,7 +38,7 @@ public class BirthdayService {
 
         // create schedule entity
         BirthdaySchedule birthdaySchedule = new BirthdaySchedule(dto.getGuildId(), dto.getUserId(), null);
-        birthdaySchedule.setUpcomingBirthdayAt(BirthdayScheduleUtils.calculateUpcomingBirthday(dto.getDay(), dto.getMonth(), dto.getZoneId()));
+        birthdaySchedule.setUpcomingBirthdayAt(birthdayScheduleCalculator.calculateUpcomingBirthday(dto.getDay(), dto.getMonth(), dto.getZoneId()));
 
         // persist schedule
         birthdayScheduleRepository.persist(birthdaySchedule);
@@ -78,7 +79,7 @@ public class BirthdayService {
 
         // update schedule by dirty checking
         birthdaySchedule.setUpcomingBirthdayAt(
-                BirthdayScheduleUtils.calculateUpcomingBirthday(updatedDTO.getDay(), updatedDTO.getMonth(), updatedDTO.getZoneId())
+                birthdayScheduleCalculator.calculateUpcomingBirthday(updatedDTO.getDay(), updatedDTO.getMonth(), updatedDTO.getZoneId())
         );
     }
 

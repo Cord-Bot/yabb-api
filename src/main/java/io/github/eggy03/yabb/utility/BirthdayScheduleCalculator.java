@@ -1,16 +1,25 @@
 package io.github.eggy03.yabb.utility;
 
+import io.github.eggy03.yabb.annotation.UTCClock;
+import jakarta.enterprise.context.ApplicationScoped;
 import lombok.NonNull;
-import lombok.experimental.UtilityClass;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.MonthDay;
 import java.time.Year;
 import java.time.ZoneId;
 
-@UtilityClass
-public class BirthdayScheduleUtils {
+@ApplicationScoped
+public class BirthdayScheduleCalculator {
+
+    // clock produced by our custom bean
+    private final @NonNull Clock clock;
+
+    public BirthdayScheduleCalculator(@NonNull @UTCClock Clock clock) {
+        this.clock = clock;
+    }
 
     /**
      * Calculates the next instant for a given birth month and day.
@@ -83,20 +92,24 @@ public class BirthdayScheduleUtils {
      * @throws NullPointerException if {@code zoneIdString} is null
      */
     @NonNull
-    public static Instant calculateUpcomingBirthday(int birthDay, int birthMonth, @NonNull String zoneIdString) {
+    public Instant calculateUpcomingBirthday(int birthDay, int birthMonth, @NonNull String zoneIdString) {
 
         MonthDay birthMonthDay = MonthDay.of(birthMonth, birthDay);
         ZoneId zoneId = ZoneId.of(zoneIdString);
 
-        Year currentYear = Year.now(zoneId);
+        // capture today only ONCE and derive currentYear from it
+        // if u use Year.now() while u have LocalDate.now()
+        // it may straddle at end of the year boundaries
+        LocalDate today = LocalDate.now(clock.withZone(zoneId));
+        Year currentYear = Year.from(today);
 
         LocalDate thisYearBirthDate = currentYear.atMonthDay(birthMonthDay);
         LocalDate nextYearBirthDate = currentYear.plusYears(1).atMonthDay(birthMonthDay);
-        LocalDate today = LocalDate.now(zoneId);
+        // always add the year first and then resolve monthDay or else 29 Feb birthdays in leap years won't be preserved
 
-        return today.isAfter(thisYearBirthDate) ?
-                nextYearBirthDate.atStartOfDay(zoneId).toInstant() :
-                thisYearBirthDate.atStartOfDay(zoneId).toInstant();
+        return today.isAfter(thisYearBirthDate)
+                ? nextYearBirthDate.atStartOfDay(zoneId).toInstant()
+                : thisYearBirthDate.atStartOfDay(zoneId).toInstant();
     }
 
     /**
@@ -117,7 +130,7 @@ public class BirthdayScheduleUtils {
      * @throws NullPointerException if {@code zoneIdString} is null
      */
     @NonNull
-    public static Instant calculateBirthdayForYear(int birthDay, int birthMonth, int year, @NonNull String zoneIdString) {
+    public Instant calculateBirthdayForYear(int birthDay, int birthMonth, int year, @NonNull String zoneIdString) {
 
         return MonthDay.of(birthMonth, birthDay)
                 .atYear(year)
