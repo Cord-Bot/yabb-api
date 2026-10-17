@@ -6,18 +6,19 @@ import io.github.eggy03.yabb.entity.BirthdayId;
 import io.github.eggy03.yabb.entity.BirthdaySchedule;
 import io.github.eggy03.yabb.repository.BirthdayRepository;
 import io.github.eggy03.yabb.repository.BirthdayScheduleRepository;
+import io.github.eggy03.yabb.utility.BirthdayScheduleCalculator;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.ValidatableResponse;
 import jakarta.inject.Inject;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -25,6 +26,7 @@ import java.util.stream.Stream;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Slf4j
 @QuarkusTest
 class BirthdayControllerTest {
 
@@ -101,6 +103,9 @@ class BirthdayControllerTest {
 
     @Inject
     BirthdayScheduleRepository birthdayScheduleRepository;
+
+    @Inject
+    BirthdayScheduleCalculator birthdayScheduleCalculator;
 
     // repeated rest-assured calls
     ValidatableResponse postBirthday(@NonNull BirthdayDTO dto) {
@@ -179,7 +184,7 @@ class BirthdayControllerTest {
                 .satisfies(schedule -> {
                     assertThat(schedule.getGuildId()).isEqualTo(dto.getGuildId());
                     assertThat(schedule.getUserId()).isEqualTo(dto.getUserId());
-                    assertThat(schedule.getUpcomingBirthdayAt()).isInstanceOf(Instant.class);
+                    assertThat(schedule.getUpcomingBirthdayAt()).isEqualTo(birthdayScheduleCalculator.calculateUpcomingBirthday(dto.getDay(), dto.getMonth(), dto.getZoneId()));
                 });
 
         // Note: The HTTP request for saving/updating the birthday
@@ -203,8 +208,11 @@ class BirthdayControllerTest {
         // will handle HTTP requests. The two mocked instances of the utility
         // may not even run on the same thread.
 
-        // TODO: Freeze time in tests to make the scheduled birthday assertion deterministic.
-        // until then, dont validate the scheduled time
+        // Freeze time in tests to make the scheduled birthday assertion deterministic.
+        // until then, don't validate the scheduled time
+
+        // UPDATE: FixedClockProducer now injects a frozen clock
+        // So every service which uses Clock will now use that fixed clock
 
     }
 
