@@ -1,12 +1,12 @@
-create table yabb.guild_table
+create table yabb.config_table
 (
     guild_id   bigint not null,
     channel_id bigint not null,
     role_id    bigint,
 
-    constraint guild_table_pk primary key (guild_id),
-    constraint guild_table_unique_channel_id unique (channel_id),
-    constraint guild_table_unique_role_id unique (role_id)
+    constraint config_table_pk primary key (guild_id),
+    constraint config_table_unique_channel_id unique (channel_id),
+    constraint config_table_unique_role_id unique (role_id)
 );
 
 create table yabb.birthday_table

@@ -1,6 +1,6 @@
 package io.github.eggy03.yabb.exception.mapper;
 
-import io.github.eggy03.yabb.exception.GuildNotFoundException;
+import io.github.eggy03.yabb.exception.ConfigNotFoundException;
 import io.github.eggy03.yabb.exception.entity.ErrorResponse;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
@@ -13,13 +13,13 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 
 @Provider
-public class GuildNotFoundExceptionMapper implements ExceptionMapper<GuildNotFoundException> {
+public class ConfigNotFoundExceptionMapper implements ExceptionMapper<ConfigNotFoundException> {
 
     @Context
     UriInfo uriInfo;
 
     @Override
-    public Response toResponse(@NonNull GuildNotFoundException e) {
+    public Response toResponse(@NonNull ConfigNotFoundException e) {
 
         ErrorResponse errorResponse = new ErrorResponse(
                 Response.Status.NOT_FOUND.getStatusCode(),

@@ -16,8 +16,8 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "guild_table", schema = "yabb")
-public class Guild {
+@Table(name = "config_table", schema = "yabb")
+public class Config {
 
     @Id
     @Column(name = "guild_id")
