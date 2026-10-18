@@ -1,5 +1,6 @@
 package io.github.eggy03.yabb.exception.mapper;
 
+import io.github.eggy03.yabb.annotation.UTCClock;
 import io.github.eggy03.yabb.exception.entity.ErrorResponse;
 import io.quarkus.arc.ArcUndeclaredThrowableException;
 import jakarta.ws.rs.core.Context;
@@ -10,14 +11,19 @@ import jakarta.ws.rs.ext.Provider;
 import org.hibernate.exception.ConstraintViolationException;
 import org.jspecify.annotations.NonNull;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
+import java.time.Clock;
 
 @Provider
 public class ArcUndeclaredThrowableExceptionMapper implements ExceptionMapper<ArcUndeclaredThrowableException> {
 
     @Context
     UriInfo uriInfo;
+
+    private final @NonNull Clock clock;
+
+    public ArcUndeclaredThrowableExceptionMapper(@NonNull @UTCClock Clock clock) {
+        this.clock = clock;
+    }
 
     @Override
     public Response toResponse(@NonNull ArcUndeclaredThrowableException e) {
@@ -35,7 +41,7 @@ public class ArcUndeclaredThrowableExceptionMapper implements ExceptionMapper<Ar
                 Response.Status.CONFLICT.getStatusCode(),
                 cve.getClass().getSimpleName(),
                 cve.getMessage() == null ? "N/A" : cve.getMessage(),
-                OffsetDateTime.now(ZoneId.systemDefault()),
+                clock.instant(),
                 uriInfo.getPath() == null ? "N/A" : uriInfo.getPath()
         );
 
@@ -51,7 +57,7 @@ public class ArcUndeclaredThrowableExceptionMapper implements ExceptionMapper<Ar
                 Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                 e.getClass().getSimpleName(),
                 e.getMessage() == null ? "N/A" : e.getMessage(),
-                OffsetDateTime.now(ZoneId.systemDefault()),
+                clock.instant(),
                 uriInfo.getPath() == null ? "N/A" : uriInfo.getPath()
         );
 

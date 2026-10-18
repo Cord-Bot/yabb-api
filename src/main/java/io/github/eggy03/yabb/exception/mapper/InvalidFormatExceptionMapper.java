@@ -1,6 +1,7 @@
 package io.github.eggy03.yabb.exception.mapper;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import io.github.eggy03.yabb.annotation.UTCClock;
 import io.github.eggy03.yabb.exception.entity.ErrorResponse;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
@@ -9,14 +10,19 @@ import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 import org.jspecify.annotations.NonNull;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
+import java.time.Clock;
 
 @Provider
 public class InvalidFormatExceptionMapper implements ExceptionMapper<InvalidFormatException> {
 
     @Context
     UriInfo uriInfo;
+
+    private final @NonNull Clock clock;
+
+    public InvalidFormatExceptionMapper(@NonNull @UTCClock Clock clock) {
+        this.clock = clock;
+    }
 
     @Override
     public Response toResponse(@NonNull InvalidFormatException e) {
@@ -25,7 +31,7 @@ public class InvalidFormatExceptionMapper implements ExceptionMapper<InvalidForm
                 Response.Status.BAD_REQUEST.getStatusCode(),
                 e.getClass().getSimpleName(),
                 e.getMessage() == null ? "N/A" : e.getMessage(),
-                OffsetDateTime.now(ZoneId.systemDefault()),
+                clock.instant(),
                 uriInfo.getPath() == null ? "N/A" : uriInfo.getPath()
         );
 

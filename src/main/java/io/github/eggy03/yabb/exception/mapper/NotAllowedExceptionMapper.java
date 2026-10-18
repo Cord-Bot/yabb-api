@@ -1,5 +1,6 @@
 package io.github.eggy03.yabb.exception.mapper;
 
+import io.github.eggy03.yabb.annotation.UTCClock;
 import io.github.eggy03.yabb.exception.entity.ErrorResponse;
 import jakarta.ws.rs.NotAllowedException;
 import jakarta.ws.rs.core.Context;
@@ -9,14 +10,19 @@ import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 import org.jspecify.annotations.NonNull;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
+import java.time.Clock;
 
 @Provider
 public class NotAllowedExceptionMapper implements ExceptionMapper<NotAllowedException> {
 
     @Context
     UriInfo uriInfo;
+
+    private final @NonNull Clock clock;
+
+    public NotAllowedExceptionMapper(@NonNull @UTCClock Clock clock) {
+        this.clock = clock;
+    }
 
     @Override
     public Response toResponse(@NonNull NotAllowedException e) {
@@ -25,7 +31,7 @@ public class NotAllowedExceptionMapper implements ExceptionMapper<NotAllowedExce
                 Response.Status.METHOD_NOT_ALLOWED.getStatusCode(),
                 e.getClass().getSimpleName(),
                 e.getMessage() == null ? "N/A" : e.getMessage(),
-                OffsetDateTime.now(ZoneId.systemDefault()),
+                clock.instant(),
                 uriInfo.getPath() == null ? "N/A" : uriInfo.getPath()
         );
 

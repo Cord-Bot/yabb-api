@@ -1,5 +1,6 @@
 package io.github.eggy03.yabb.exception.mapper;
 
+import io.github.eggy03.yabb.annotation.UTCClock;
 import io.github.eggy03.yabb.exception.entity.ErrorResponse;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
@@ -7,9 +8,9 @@ import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
+import java.time.Clock;
 
 @Provider
 @Slf4j
@@ -17,6 +18,12 @@ public class GenericExceptionMapper implements ExceptionMapper<Exception> {
 
     @Context
     UriInfo uriInfo;
+
+    private final @NonNull Clock clock;
+
+    public GenericExceptionMapper(@NonNull @UTCClock Clock clock) {
+        this.clock = clock;
+    }
 
     @Override
     public Response toResponse(Exception e) {
@@ -27,7 +34,7 @@ public class GenericExceptionMapper implements ExceptionMapper<Exception> {
                 Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                 e.getClass().getSimpleName(),
                 e.getMessage() == null ? "N/A" : e.getMessage(),
-                OffsetDateTime.now(ZoneId.systemDefault()),
+                clock.instant(),
                 uriInfo.getPath() == null ? "N/A" : uriInfo.getPath()
         );
 

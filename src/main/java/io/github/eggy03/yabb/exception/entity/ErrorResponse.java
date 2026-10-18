@@ -6,7 +6,7 @@ import lombok.Data;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 @Data
 @AllArgsConstructor
@@ -23,8 +23,8 @@ public class ErrorResponse {
     @Schema(required = true, readOnly = true)
     private String message;
 
-    @Schema(required = true, readOnly = true, type = SchemaType.STRING, format = "date-time", examples = "2026-10-13T05:09:08.496915684+05:30")
-    private OffsetDateTime timeStamp;
+    @Schema(required = true, readOnly = true, type = SchemaType.STRING, format = "date-time", examples = "2026-10-13T00:00:00Z")
+    private Instant timeStamp;
 
     @Schema(required = true, readOnly = true)
     private String path;

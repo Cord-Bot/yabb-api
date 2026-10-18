@@ -1,5 +1,6 @@
 package io.github.eggy03.yabb.exception.mapper;
 
+import io.github.eggy03.yabb.annotation.UTCClock;
 import io.github.eggy03.yabb.exception.BirthdayNotFoundException;
 import io.github.eggy03.yabb.exception.entity.ErrorResponse;
 import jakarta.ws.rs.core.Context;
@@ -9,14 +10,19 @@ import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 import org.jspecify.annotations.NonNull;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
+import java.time.Clock;
 
 @Provider
 public class BirthdayNotFoundExceptionMapper implements ExceptionMapper<BirthdayNotFoundException> {
 
     @Context
     UriInfo uriInfo;
+
+    private final @NonNull Clock clock;
+
+    public BirthdayNotFoundExceptionMapper(@NonNull @UTCClock Clock clock) {
+        this.clock = clock;
+    }
 
     @Override
     public Response toResponse(@NonNull BirthdayNotFoundException e) {
@@ -25,7 +31,7 @@ public class BirthdayNotFoundExceptionMapper implements ExceptionMapper<Birthday
                 Response.Status.NOT_FOUND.getStatusCode(),
                 e.getClass().getSimpleName(),
                 e.getMessage() == null ? "N/A" : e.getMessage(),
-                OffsetDateTime.now(ZoneId.systemDefault()),
+                clock.instant(),
                 uriInfo.getPath() == null ? "N/A" : uriInfo.getPath()
         );
 
