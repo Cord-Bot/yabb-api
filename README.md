@@ -54,7 +54,7 @@ docker run -d \
 services:
   api:
     container_name: yabb-api
-    image: ghcr.io/yabb/yabb-api:latest
+    image: ghcr.io/yetanotherbirthdaybot/yabb-api:latest
     environment:
       DB_URL: jdbc:postgresql://<host>:<port>/<database>
       DB_USERNAME: <username>
