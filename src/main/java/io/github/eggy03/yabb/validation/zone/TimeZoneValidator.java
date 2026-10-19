@@ -10,7 +10,6 @@ import java.time.ZoneId;
 public class TimeZoneValidator implements ConstraintValidator<ValidTimeZone, BirthdayDTO> {
 
     @Override
-    @SuppressWarnings("java:S2201")
     public boolean isValid(BirthdayDTO dto, ConstraintValidatorContext context) {
 
         if (dto == null || dto.getZoneId() == null)
